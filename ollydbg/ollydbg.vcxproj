@@ -74,11 +74,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="delphi.cpp" />
-    <ClCompile Include="plugin.cpp" />
+    <ClCompile Include="ollydbg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="plugin.h" />
+    <ClInclude Include="ollydbg.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

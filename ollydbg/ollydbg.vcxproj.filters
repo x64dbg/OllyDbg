@@ -15,15 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="delphi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plugin.cpp">
+    <ClCompile Include="ollydbg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="plugin.h">
+    <ClInclude Include="ollydbg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

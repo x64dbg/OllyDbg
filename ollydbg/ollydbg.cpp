@@ -1,6 +1,6 @@
 #include <windows.h>
 #define _CHAR_UNSIGNED //TODO: this is probably harmful for the implementation
-#include "plugin.h"
+#include "ollydbg.h"
 
 extc void    cdecl Addtolist(long addr,int highlight,char *format,...) { }
 extc void    cdecl Updatelist(void) { }
@@ -212,3 +212,6 @@ extc int     cdecl Pluginreadintfromini(HINSTANCE dllinst,char *key,int def) { r
 extc int     cdecl Pluginreadstringfromini(HINSTANCE dllinst,char *key,char *s,char *def) { return 0; }
 extc int     cdecl Pluginsaverecord(ulong tag,ulong size,void *data) { return 0; }
 extc int     cdecl Plugingetvalue(int type) { return 0; }
+
+void __GetExceptDLLinfo(void*) { }
+unsigned int ___CPPdebugHook = 0;
