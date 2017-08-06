@@ -32,25 +32,26 @@
 // with different options):
 #ifdef __BORLANDC__
 
-  #pragma option -a1                   // Byte alignment
-  #pragma option -K                    // Unsigned char
+#pragma option -a1                   // Byte alignment
+#pragma option -K                    // Unsigned char
 
-  // And here I check that settings are correct. Unfortunately, Microsoft C (at
-  // least C++ 5.0) doesn't allow for sizeof and typecasts in conditionals:
+// And here I check that settings are correct. Unfortunately, Microsoft C (at
+// least C++ 5.0) doesn't allow for sizeof and typecasts in conditionals:
 
-  typedef struct t_aligntest {
+typedef struct t_aligntest
+{
     char           a;
     long           b;
-  } t_aligntest;
+} t_aligntest;
 
-  #if (sizeof(t_aligntest)!=sizeof(char)+sizeof(long))
-    #error Please assure byte alignment of OllyDbg structures
-  #endif
-  #undef t_aligntest
+#if (sizeof(t_aligntest)!=sizeof(char)+sizeof(long))
+#error Please assure byte alignment of OllyDbg structures
+#endif
+#undef t_aligntest
 
-  #if ((char)0xFF!=255)
-    #error Please set default char type to unsigned
-  #endif
+#if ((char)0xFF!=255)
+#error Please set default char type to unsigned
+#endif
 
 #endif
 
@@ -58,29 +59,29 @@
 // that character is set to unsigned.
 #ifdef _MSC_VER
 
-  #pragma pack(1)                      // Force byte alignment of structures
+#pragma pack(1)                      // Force byte alignment of structures
 
-  #ifndef _CHAR_UNSIGNED               // Verify that character is unsigned
-    #error Please set default char type to unsigned (option /J)
-  #endif
+#ifndef _CHAR_UNSIGNED               // Verify that character is unsigned
+#error Please set default char type to unsigned (option /J)
+#endif
 
-  // Borland adds underscore to export automatically, whereas I don't know any
-  // such option for Microsoft compiler. This solution is not too elegant but
-  // works.
-  #define ODBG_Plugindata      _ODBG_Plugindata
-  #define ODBG_Plugininit      _ODBG_Plugininit
-  #define ODBG_Pluginmainloop  _ODBG_Pluginmainloop
-  #define ODBG_Pluginsaveudd   _ODBG_Pluginsaveudd
-  #define ODBG_Pluginuddrecord _ODBG_Pluginuddrecord
-  #define ODBG_Pluginmenu      _ODBG_Pluginmenu
-  #define ODBG_Pluginaction    _ODBG_Pluginaction
-  #define ODBG_Pluginshortcut  _ODBG_Pluginshortcut
-  #define ODBG_Pluginreset     _ODBG_Pluginreset
-  #define ODBG_Pluginclose     _ODBG_Pluginclose
-  #define ODBG_Plugindestroy   _ODBG_Plugindestroy
-  #define ODBG_Paused          _ODBG_Paused
-  #define ODBG_Pausedex        _ODBG_Pausedex
-  #define ODBG_Plugincmd       _ODBG_Plugincmd
+// Borland adds underscore to export automatically, whereas I don't know any
+// such option for Microsoft compiler. This solution is not too elegant but
+// works.
+#define ODBG_Plugindata      _ODBG_Plugindata
+#define ODBG_Plugininit      _ODBG_Plugininit
+#define ODBG_Pluginmainloop  _ODBG_Pluginmainloop
+#define ODBG_Pluginsaveudd   _ODBG_Pluginsaveudd
+#define ODBG_Pluginuddrecord _ODBG_Pluginuddrecord
+#define ODBG_Pluginmenu      _ODBG_Pluginmenu
+#define ODBG_Pluginaction    _ODBG_Pluginaction
+#define ODBG_Pluginshortcut  _ODBG_Pluginshortcut
+#define ODBG_Pluginreset     _ODBG_Pluginreset
+#define ODBG_Pluginclose     _ODBG_Pluginclose
+#define ODBG_Plugindestroy   _ODBG_Plugindestroy
+#define ODBG_Paused          _ODBG_Paused
+#define ODBG_Pausedex        _ODBG_Pausedex
+#define ODBG_Plugincmd       _ODBG_Plugincmd
 
 #endif
 
@@ -91,9 +92,9 @@
 #define ODBG_PLUGIN_VERSION 110             // Version of plugin interface
 
 #ifdef __cplusplus
-  #define extc           extern "C"    // Assure that names are not mangled
+#define extc           extern "C"    // Assure that names are not mangled
 #else
-  #define extc           extern
+#define extc           extern
 #endif
 
 #define _export        __declspec(dllexport)
@@ -164,14 +165,14 @@ typedef unsigned long  ulong;          // Unsigned long
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// INFORMATION FUNCTIONS /////////////////////////////
 
-extc void    cdecl Addtolist(long addr,int highlight,char *format,...);
+extc void    cdecl Addtolist(long addr, int highlight, char* format, ...);
 extc void    cdecl Updatelist(void);
 extc HWND    cdecl Createlistwindow(void);
-extc void    cdecl Error(char *format,...);
-extc void    cdecl Message(ulong addr,char *format,...);
-extc void    cdecl Infoline(char *format,...);
-extc void    cdecl Progress(int promille,char *format,...);
-extc void    cdecl Flash(char *format,...);
+extc void    cdecl Error(char* format, ...);
+extc void    cdecl Message(ulong addr, char* format, ...);
+extc void    cdecl Infoline(char* format, ...);
+extc void    cdecl Progress(int promille, char* format, ...);
+extc void    cdecl Flash(char* format, ...);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA FORMATTING FUNCTIONS ///////////////////////////
@@ -198,18 +199,18 @@ extc void    cdecl Flash(char *format,...);
 #define DIACRITICAL    0x02            // Diacritical character
 #define RAREASCII      0x10            // Rare ASCII character
 
-extc int     cdecl Decodeaddress(ulong addr,ulong base,int addrmode,char *symb,int nsymb,char *comment);
-extc int     cdecl Decoderelativeoffset(ulong addr,int addrmode,char *symb,int nsymb);
-extc int     cdecl Decodecharacter(char *s,uint c);
-extc int     cdecl Printfloat4(char *s,float f);
-extc int     cdecl Printfloat8(char *s,double d);
-extc int     cdecl Printfloat10(char *s,long double ext);
-extc int     cdecl Print3dnow(char *s,uchar *f);
-extc int     cdecl Printsse(char *s,char *f);
+extc int     cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment);
+extc int     cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb);
+extc int     cdecl Decodecharacter(char* s, uint c);
+extc int     cdecl Printfloat4(char* s, float f);
+extc int     cdecl Printfloat8(char* s, double d);
+extc int     cdecl Printfloat10(char* s, long double ext);
+extc int     cdecl Print3dnow(char* s, uchar* f);
+extc int     cdecl Printsse(char* s, char* f);
 extc ulong   cdecl Followcall(ulong addr);
 extc int     cdecl IstextA(char c);
 extc int     cdecl IstextW(wchar_t w);
-extc int     cdecl Stringtotext(char *data,int ndata,char *text,int ntext);
+extc int     cdecl Stringtotext(char* data, int ndata, char* text, int ntext);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// DATA INPUT FUNCTIONS /////////////////////////////
@@ -239,55 +240,58 @@ extc int     cdecl Stringtotext(char *data,int ndata,char *text,int ntext);
 #define ANIMATE_TROVER 7               // Run trace over
 #define ANIMATE_STOP   8               // Gracefully stop animation
 
-typedef struct t_hexstr {              // String used for hex/text search
-  int            n;                    // String length
-  uchar          data[TEXTLEN];        // Data
-  uchar          mask[TEXTLEN];        // Mask, 0 bits are masked
+typedef struct t_hexstr                // String used for hex/text search
+{
+    int            n;                    // String length
+    uchar          data[TEXTLEN];        // Data
+    uchar          mask[TEXTLEN];        // Mask, 0 bits are masked
 } t_hexstr;
 
-typedef struct t_asmmodel {            // Model to search for assembler command
-  uchar          code[MAXCMDSIZE];     // Binary code
-  uchar          mask[MAXCMDSIZE];     // Mask for binary code (0: bit ignored)
-  int            length;               // Length of code, bytes (0: empty)
-  int            jmpsize;              // Offset size if relative jump
-  int            jmpoffset;            // Offset relative to IP
-  int            jmppos;               // Position of jump offset in command
+typedef struct t_asmmodel              // Model to search for assembler command
+{
+    uchar          code[MAXCMDSIZE];     // Binary code
+    uchar          mask[MAXCMDSIZE];     // Mask for binary code (0: bit ignored)
+    int            length;               // Length of code, bytes (0: empty)
+    int            jmpsize;              // Offset size if relative jump
+    int            jmpoffset;            // Offset relative to IP
+    int            jmppos;               // Position of jump offset in command
 } t_asmmodel;
 
-typedef struct t_extmodel {            // Model for extended command search
-  char           code[MAXCMDSIZE];     // Binary code
-  char           mask[MAXCMDSIZE];     // Mask for binary code (0: bit ignored)
-  int            length;               // Length of code, bytes (0: empty)
-  int            jmpsize;              // Offset size if relative jump
-  int            jmpoffset;            // Offset relative to IP
-  int            jmppos;               // Position of jump offset in command
-  int            isany;                // Count for ANY's argument
-  int            cmdoffset;            // Offset of command in the source
-  char           ramask[MAXCMDSIZE];   // Mask for pseudoregister RA
-  char           rbmask[MAXCMDSIZE];   // Mask for pseudoregister RB
+typedef struct t_extmodel              // Model for extended command search
+{
+    char           code[MAXCMDSIZE];     // Binary code
+    char           mask[MAXCMDSIZE];     // Mask for binary code (0: bit ignored)
+    int            length;               // Length of code, bytes (0: empty)
+    int            jmpsize;              // Offset size if relative jump
+    int            jmpoffset;            // Offset relative to IP
+    int            jmppos;               // Position of jump offset in command
+    int            isany;                // Count for ANY's argument
+    int            cmdoffset;            // Offset of command in the source
+    char           ramask[MAXCMDSIZE];   // Mask for pseudoregister RA
+    char           rbmask[MAXCMDSIZE];   // Mask for pseudoregister RB
 } t_extmodel;
 
-extc int     cdecl Getlong(char *title,ulong *data,int datasize,char letter,int mode);
-extc int     cdecl Getlongxy(char *title,ulong *data,int datasize,char letter,int mode,int x,int y);
-extc int     cdecl Getregxy(char *title,ulong *data,char letter,int x,int y);
-extc int     cdecl Getline(char *title,ulong *data);
-extc int     cdecl Getlinexy(char *title,ulong *data,int x,int y);
-extc int     cdecl Getfloat10(char *title,long double *fdata,uchar *tag,char letter,int mode);
-extc int     cdecl Getfloat10xy(char *title,long double *fdata,char *tag,char letter,int mode,int x,int y);
-extc int     cdecl Getfloat(char *title,void *fdata,int size,char letter,int mode);
-extc int     cdecl Getfloatxy(char *title,void *fdata,int size,char letter,int mode,int x,int y);
-extc void    cdecl Getasmfindmodel(t_asmmodel model[NMODELS],char letter,int searchall);
-extc void    cdecl Getasmfindmodelxy(t_asmmodel model[NMODELS],char letter,int searchall,int x,int y);
-extc int     cdecl Gettext(char *title,char *text,char letter,int type,int fontindex);
-extc int     cdecl Gettextxy(char *title,char *text,char letter,int type,int fontindex,int x,int y);
-extc int     cdecl Gethexstring(char *title,t_hexstr *hs,int mode,int fontindex,char letter);
-extc int     cdecl Gethexstringxy(char *title,t_hexstr *hs,int mode,int fontindex,char letter,int x,int y);
-extc int     cdecl Getmmx(char *title,uchar *data,int mode);
-extc int     cdecl Getmmxxy(char *title,char *data,int mode,int x,int y);
-extc int     cdecl Get3dnow(char *title,uchar *data,int mode);
-extc int     cdecl Get3dnowxy(char *title,char *data,int mode,int x,int y);
-extc int     cdecl Browsefilename(char *title,char *name,char *defext,int getarguments);
-extc int     cdecl OpenEXEfile(char *path,int dropped);
+extc int     cdecl Getlong(char* title, ulong* data, int datasize, char letter, int mode);
+extc int     cdecl Getlongxy(char* title, ulong* data, int datasize, char letter, int mode, int x, int y);
+extc int     cdecl Getregxy(char* title, ulong* data, char letter, int x, int y);
+extc int     cdecl Getline(char* title, ulong* data);
+extc int     cdecl Getlinexy(char* title, ulong* data, int x, int y);
+extc int     cdecl Getfloat10(char* title, long double* fdata, uchar* tag, char letter, int mode);
+extc int     cdecl Getfloat10xy(char* title, long double* fdata, char* tag, char letter, int mode, int x, int y);
+extc int     cdecl Getfloat(char* title, void* fdata, int size, char letter, int mode);
+extc int     cdecl Getfloatxy(char* title, void* fdata, int size, char letter, int mode, int x, int y);
+extc void    cdecl Getasmfindmodel(t_asmmodel model[NMODELS], char letter, int searchall);
+extc void    cdecl Getasmfindmodelxy(t_asmmodel model[NMODELS], char letter, int searchall, int x, int y);
+extc int     cdecl Gettext(char* title, char* text, char letter, int type, int fontindex);
+extc int     cdecl Gettextxy(char* title, char* text, char letter, int type, int fontindex, int x, int y);
+extc int     cdecl Gethexstring(char* title, t_hexstr* hs, int mode, int fontindex, char letter);
+extc int     cdecl Gethexstringxy(char* title, t_hexstr* hs, int mode, int fontindex, char letter, int x, int y);
+extc int     cdecl Getmmx(char* title, uchar* data, int mode);
+extc int     cdecl Getmmxxy(char* title, char* data, int mode, int x, int y);
+extc int     cdecl Get3dnow(char* title, uchar* data, int mode);
+extc int     cdecl Get3dnowxy(char* title, char* data, int mode, int x, int y);
+extc int     cdecl Browsefilename(char* title, char* name, char* defext, int getarguments);
+extc int     cdecl OpenEXEfile(char* path, int dropped);
 extc int     cdecl Attachtoactiveprocess(int newprocessid);
 extc void    cdecl Animate(int animation);
 
@@ -435,96 +439,102 @@ extc void    cdecl Animate(int animation);
 #define TY_DUMMY       0x00002000      // Consists of single RET command
 #define TY_NOSIDE      0x00004000      // No side effects except in stack
 
-typedef struct t_scheme {              // Color scheme
-  char           *name;                // Name of the scheme
-  int            textcolor;            // Colour used to draw text
-  int            hitextcolor;          // Colour used to draw highlited text
-  int            lowcolor;             // Colour used to draw auxiliary text
-  int            bkcolor;              // Colour used to draw backgrounds
-  int            selbkcolor;           // Colour used for selecting background
-  int            linecolor;            // Colour used for separating lines
-  int            auxcolor;             // Colour used for auxiliary objects
-  int            condbkcolor;          // Colour used for background of cond brk
+typedef struct t_scheme                // Color scheme
+{
+    char*           name;                // Name of the scheme
+    int            textcolor;            // Colour used to draw text
+    int            hitextcolor;          // Colour used to draw highlited text
+    int            lowcolor;             // Colour used to draw auxiliary text
+    int            bkcolor;              // Colour used to draw backgrounds
+    int            selbkcolor;           // Colour used for selecting background
+    int            linecolor;            // Colour used for separating lines
+    int            auxcolor;             // Colour used for auxiliary objects
+    int            condbkcolor;          // Colour used for background of cond brk
 } t_scheme;
 
-typedef struct t_schemeopt {           // Color scheme, alternative form
-  char           *name;                // Name of the scheme
-  int            color[8];             // Colours used as in t_scheme
+typedef struct t_schemeopt             // Color scheme, alternative form
+{
+    char*           name;                // Name of the scheme
+    int            color[8];             // Colours used as in t_scheme
 } t_schemeopt;
 
-typedef struct t_bar {
-  int            nbar;                 // Number of active columns
-  int            font;                 // Font used for bar segments
-  int            dx[NBAR];             // Actual widths of columns, pixels
-  int            defdx[NBAR];          // Default widths of columns, chars
-  char           *name[NBAR];          // Column names (may be NULL)
-  uchar          mode[NBAR];           // Combination of BAR_xxx bits
-  int            captured;             // One of CAPT_xxx, set to CAPT_FREE
-  int            active;               // Info about how mouse is captured
-  int            prevx;                // Previous mouse coordinate
+typedef struct t_bar
+{
+    int            nbar;                 // Number of active columns
+    int            font;                 // Font used for bar segments
+    int            dx[NBAR];             // Actual widths of columns, pixels
+    int            defdx[NBAR];          // Default widths of columns, chars
+    char*           name[NBAR];          // Column names (may be NULL)
+    uchar          mode[NBAR];           // Combination of BAR_xxx bits
+    int            captured;             // One of CAPT_xxx, set to CAPT_FREE
+    int            active;               // Info about how mouse is captured
+    int            prevx;                // Previous mouse coordinate
 } t_bar;
 
-typedef struct t_sortheader {          // Header of sorted data field
-  ulong          addr;                 // Base address of the entry
-  ulong          size;                 // Size address of the entry
-  ulong          type;                 // Entry type, TY_xxx
+typedef struct t_sortheader            // Header of sorted data field
+{
+    ulong          addr;                 // Base address of the entry
+    ulong          size;                 // Size address of the entry
+    ulong          type;                 // Entry type, TY_xxx
 } t_sortheader;
 
-typedef int  SORTFUNC(const t_sortheader *,const t_sortheader *,const int);
-typedef int  DRAWFUNC(char *,char *,int *,t_sortheader *,int);
-typedef void DESTFUNC(t_sortheader *);
+typedef int  SORTFUNC(const t_sortheader*, const t_sortheader*, const int);
+typedef int  DRAWFUNC(char*, char*, int*, t_sortheader*, int);
+typedef void DESTFUNC(t_sortheader*);
 
 #define AUTOARRANGE    ((SORTFUNC *)1) // Autoarrangeable sorted data
 
-typedef struct t_sorted {              // Descriptor of sorted table
-  char           name[MAX_PATH];       // Name of table, as appears in error
-  int            n;                    // Actual number of entries
-  int            nmax;                 // Maximal number of entries
-  int            selected;             // Index of selected entry or -1
-  ulong          seladdr;              // Base address of selected entry
-  int            itemsize;             // Size of single entry
-  ulong          version;              // Unique version of table
-  void           *data;                // Entries, sorted by address
-  SORTFUNC       *sortfunc;            // Function which sorts data or NULL
-  DESTFUNC       *destfunc;            // Destructor function or NULL
-  int            sort;                 // Sorting criterium (column)
-  int            sorted;               // Whether indexes are sorted
-  int            *index;               // Indexes, sorted by criterium
-  int            suppresserr;          // Suppress multiple overflow errors
+typedef struct t_sorted                // Descriptor of sorted table
+{
+    char           name[MAX_PATH];       // Name of table, as appears in error
+    int            n;                    // Actual number of entries
+    int            nmax;                 // Maximal number of entries
+    int            selected;             // Index of selected entry or -1
+    ulong          seladdr;              // Base address of selected entry
+    int            itemsize;             // Size of single entry
+    ulong          version;              // Unique version of table
+    void*           data;                // Entries, sorted by address
+    SORTFUNC*       sortfunc;            // Function which sorts data or NULL
+    DESTFUNC*       destfunc;            // Destructor function or NULL
+    int            sort;                 // Sorting criterium (column)
+    int            sorted;               // Whether indexes are sorted
+    int*            index;               // Indexes, sorted by criterium
+    int            suppresserr;          // Suppress multiple overflow errors
 } t_sorted;
 
-typedef struct t_table {               // Window with sorted data and bar
-  HWND           hw;                   // Handle of window or NULL
-  t_sorted       data;                 // Sorted data
-  t_bar          bar;                  // Description of bar
-  int            showbar;              // Bar: 1-displayed, 0-hidden, -1-absent
-  short          hscroll;              // Horiz. scroll: 1-displayed, 0-hidden
-  short          colsel;               // Column in TABLE_COLSEL window
-  int            mode;                 // Combination of bits TABLE_xxx
-  int            font;                 // Font used by window
-  short          scheme;               // Colour scheme used by window
-  short          hilite;               // Syntax highlighting used by window
-  int            offset;               // First displayed row
-  int            xshift;               // Shift in X direction, pixels
-  DRAWFUNC       *drawfunc;            // Function which decodes table fields
+typedef struct t_table                 // Window with sorted data and bar
+{
+    HWND           hw;                   // Handle of window or NULL
+    t_sorted       data;                 // Sorted data
+    t_bar          bar;                  // Description of bar
+    int            showbar;              // Bar: 1-displayed, 0-hidden, -1-absent
+    short          hscroll;              // Horiz. scroll: 1-displayed, 0-hidden
+    short          colsel;               // Column in TABLE_COLSEL window
+    int            mode;                 // Combination of bits TABLE_xxx
+    int            font;                 // Font used by window
+    short          scheme;               // Colour scheme used by window
+    short          hilite;               // Syntax highlighting used by window
+    int            offset;               // First displayed row
+    int            xshift;               // Shift in X direction, pixels
+    DRAWFUNC*       drawfunc;            // Function which decodes table fields
 } t_table;
 
-extc int     cdecl Createsorteddata(t_sorted *sd,char *name,int itemsize,int nmax,SORTFUNC *sortfunc,DESTFUNC *destfunc);
-extc void    cdecl Destroysorteddata(t_sorted *sd);
-extc void*   cdecl Addsorteddata(t_sorted *sd,void *item);
-extc void    cdecl Deletesorteddata(t_sorted *sd,ulong addr);
-extc void    cdecl Deletesorteddatarange(t_sorted *sd,ulong addr0,ulong addr1);
-extc int     cdecl Deletenonconfirmedsorteddata(t_sorted *sd);
-extc void*   cdecl Findsorteddata(t_sorted *sd,ulong addr);
-extc void*   cdecl Findsorteddatarange(t_sorted *sd,ulong addr0,ulong addr1);
-extc int     cdecl Findsorteddataindex(t_sorted *sd,ulong addr0,ulong addr1);
-extc int     cdecl Sortsorteddata(t_sorted *sd,int sort);
-extc void*   cdecl Getsortedbyselection(t_sorted *sd,int index);
-extc void    cdecl Defaultbar(t_bar *pb);
-extc int     cdecl Tablefunction(t_table *pt,HWND hw,UINT msg,WPARAM wp,LPARAM lp);
-extc void    cdecl Painttable(HWND hw,t_table *pt,DRAWFUNC getline);
-extc int     cdecl Gettableselectionxy(t_table *pt,int column,int *px,int *py);
-extc void    cdecl Selectandscroll(t_table *pt,int index,int mode);
+extc int     cdecl Createsorteddata(t_sorted* sd, char* name, int itemsize, int nmax, SORTFUNC* sortfunc, DESTFUNC* destfunc);
+extc void    cdecl Destroysorteddata(t_sorted* sd);
+extc void*   cdecl Addsorteddata(t_sorted* sd, void* item);
+extc void    cdecl Deletesorteddata(t_sorted* sd, ulong addr);
+extc void    cdecl Deletesorteddatarange(t_sorted* sd, ulong addr0, ulong addr1);
+extc int     cdecl Deletenonconfirmedsorteddata(t_sorted* sd);
+extc void*   cdecl Findsorteddata(t_sorted* sd, ulong addr);
+extc void*   cdecl Findsorteddatarange(t_sorted* sd, ulong addr0, ulong addr1);
+extc int     cdecl Findsorteddataindex(t_sorted* sd, ulong addr0, ulong addr1);
+extc int     cdecl Sortsorteddata(t_sorted* sd, int sort);
+extc void*   cdecl Getsortedbyselection(t_sorted* sd, int index);
+extc void    cdecl Defaultbar(t_bar* pb);
+extc int     cdecl Tablefunction(t_table* pt, HWND hw, UINT msg, WPARAM wp, LPARAM lp);
+extc void    cdecl Painttable(HWND hw, t_table* pt, DRAWFUNC getline);
+extc int     cdecl Gettableselectionxy(t_table* pt, int column, int* px, int* py);
+extc void    cdecl Selectandscroll(t_table* pt, int index, int mode);
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// NAME FUNCTIONS ////////////////////////////////
@@ -566,19 +576,19 @@ extc void    cdecl Selectandscroll(t_table *pt,int index,int mode);
 
 #define NMHISTORY      0x40            // Converts NM_xxx to type of init list
 
-extc int     cdecl Insertname(ulong addr,int type,char *name);
-extc int     cdecl Quickinsertname(ulong addr,int type,char *name);
+extc int     cdecl Insertname(ulong addr, int type, char* name);
+extc int     cdecl Quickinsertname(ulong addr, int type, char* name);
 extc void    cdecl Mergequicknames(void);
 extc void    cdecl Discardquicknames(void);
-extc int     cdecl Findname(ulong addr,int type,char *name);
-extc int     cdecl Decodename(ulong addr,int type,char *name);
-extc ulong   cdecl Findnextname(char *name);
-extc int     cdecl Findlabel(ulong addr,char *name);
-extc void    cdecl Deletenamerange(ulong addr0,ulong addr1,int type);
-extc int     cdecl Findlabelbyname(char *name,ulong *addr,ulong addr0,ulong addr1);
-extc ulong   cdecl Findimportbyname(char *name,ulong addr0,ulong addr1);
-extc int     cdecl Demanglename(char *name,int type,char *undecorated);
-extc int     cdecl Findsymbolicname(ulong addr,char *fname);
+extc int     cdecl Findname(ulong addr, int type, char* name);
+extc int     cdecl Decodename(ulong addr, int type, char* name);
+extc ulong   cdecl Findnextname(char* name);
+extc int     cdecl Findlabel(ulong addr, char* name);
+extc void    cdecl Deletenamerange(ulong addr0, ulong addr1, int type);
+extc int     cdecl Findlabelbyname(char* name, ulong* addr, ulong addr0, ulong addr1);
+extc ulong   cdecl Findimportbyname(char* name, ulong addr0, ulong addr1);
+extc int     cdecl Demanglename(char* name, int type, char* undecorated);
+extc int     cdecl Findsymbolicname(ulong addr, char* fname);
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// DISASSEMBLY FUNCTIONS /////////////////////////////
@@ -718,137 +728,146 @@ extc int     cdecl Findsymbolicname(ulong addr,char *fname);
 
 #define NREGSTACK      32              // Length of stack trace buffer
 
-typedef struct t_reg {                 // Excerpt from context
-  int            modified;             // Some regs modified, update context
-  int            modifiedbyuser;       // Among modified, some modified by user
-  int            singlestep;           // Type of single step, SS_xxx
-  ulong          r[8];                 // EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI
-  ulong          ip;                   // Instruction pointer (EIP)
-  ulong          flags;                // Flags
-  int            top;                  // Index of top-of-stack
-  long double    f[8];                 // Float registers, f[top] - top of stack
-  char           tag[8];               // Float tags (0x3 - empty register)
-  ulong          fst;                  // FPU status word
-  ulong          fcw;                  // FPU control word
-  ulong          s[6];                 // Segment registers ES,CS,SS,DS,FS,GS
-  ulong          base[6];              // Segment bases
-  ulong          limit[6];             // Segment limits
-  char           big[6];               // Default size (0-16, 1-32 bit)
-  ulong          dr6;                  // Debug register DR6
-  ulong          threadid;             // ID of thread that owns registers
-  ulong          lasterror;            // Last thread error or 0xFFFFFFFF
-  int            ssevalid;             // Whether SSE registers valid
-  int            ssemodified;          // Whether SSE registers modified
-  char           ssereg[8][16];        // SSE registers
-  ulong          mxcsr;                // SSE control and status register
-  int            selected;             // Reports selected register to plugin
-  ulong          drlin[4];             // Debug registers DR0..DR3
-  ulong          dr7;                  // Debug register DR7
+typedef struct t_reg                   // Excerpt from context
+{
+    int            modified;             // Some regs modified, update context
+    int            modifiedbyuser;       // Among modified, some modified by user
+    int            singlestep;           // Type of single step, SS_xxx
+    ulong          r[8];                 // EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI
+    ulong          ip;                   // Instruction pointer (EIP)
+    ulong          flags;                // Flags
+    int            top;                  // Index of top-of-stack
+    long double    f[8];                 // Float registers, f[top] - top of stack
+    char           tag[8];               // Float tags (0x3 - empty register)
+    ulong          fst;                  // FPU status word
+    ulong          fcw;                  // FPU control word
+    ulong          s[6];                 // Segment registers ES,CS,SS,DS,FS,GS
+    ulong          base[6];              // Segment bases
+    ulong          limit[6];             // Segment limits
+    char           big[6];               // Default size (0-16, 1-32 bit)
+    ulong          dr6;                  // Debug register DR6
+    ulong          threadid;             // ID of thread that owns registers
+    ulong          lasterror;            // Last thread error or 0xFFFFFFFF
+    int            ssevalid;             // Whether SSE registers valid
+    int            ssemodified;          // Whether SSE registers modified
+    char           ssereg[8][16];        // SSE registers
+    ulong          mxcsr;                // SSE control and status register
+    int            selected;             // Reports selected register to plugin
+    ulong          drlin[4];             // Debug registers DR0..DR3
+    ulong          dr7;                  // Debug register DR7
 } t_reg;
 
-typedef struct t_operand {             // Full decription of command's operand
-  char           optype;               // DEC_xxx (mem) or DECR_xxx (reg,const)
-  char           opsize;               // Size of operand
-  char           regscale[8];          // Scales of registers
-  char           seg;                  // Segment register
-  ulong          opconst;              // Constant
+typedef struct t_operand               // Full decription of command's operand
+{
+    char           optype;               // DEC_xxx (mem) or DECR_xxx (reg,const)
+    char           opsize;               // Size of operand
+    char           regscale[8];          // Scales of registers
+    char           seg;                  // Segment register
+    ulong          opconst;              // Constant
 } t_operand;
 
-typedef struct t_disasm {              // Results of disassembling
-  ulong          ip;                   // Instrucion pointer
-  char           dump[TEXTLEN];        // Hexadecimal dump of the command
-  char           result[TEXTLEN];      // Disassembled command
-  char           comment[TEXTLEN];     // Brief comment
-  char           opinfo[3][TEXTLEN];   // Comments to command's operands
-  int            cmdtype;              // One of C_xxx
-  int            memtype;              // Type of addressed variable in memory
-  int            nprefix;              // Number of prefixes
-  int            indexed;              // Address contains register(s)
-  ulong          jmpconst;             // Constant jump address
-  ulong          jmptable;             // Possible address of switch table
-  ulong          adrconst;             // Constant part of address
-  ulong          immconst;             // Immediate constant
-  int            zeroconst;            // Whether contains zero constant
-  int            fixupoffset;          // Possible offset of 32-bit fixups
-  int            fixupsize;            // Possible total size of fixups or 0
-  ulong          jmpaddr;              // Destination of jump/call/return
-  int            condition;            // 0xFF:unconditional, 0:false, 1:true
-  int            error;                // Error while disassembling command
-  int            warnings;             // Combination of DAW_xxx
-  int            optype[3];            // Type of operand (extended set DEC_xxx)
-  int            opsize[3];            // Size of operand, bytes
-  int            opgood[3];            // Whether address and data valid
-  ulong          opaddr[3];            // Address if memory, index if register
-  ulong          opdata[3];            // Actual value (only integer operands)
-  t_operand      op[3];                // Full description of operand
-  ulong          regdata[8];           // Registers after command is executed
-  int            regstatus[8];         // Status of registers, one of RST_xxx
-  ulong          addrdata;             // Traced memory address
-  int            addrstatus;           // Status of addrdata, one of RST_xxx
-  ulong          regstack[NREGSTACK];  // Stack tracing buffer
-  int            rststatus[NREGSTACK]; // Status of stack items
-  int            nregstack;            // Number of items in stack trace buffer
-  ulong          reserved[29];         // Reserved for plugin compatibility
+typedef struct t_disasm                // Results of disassembling
+{
+    ulong          ip;                   // Instrucion pointer
+    char           dump[TEXTLEN];        // Hexadecimal dump of the command
+    char           result[TEXTLEN];      // Disassembled command
+    char           comment[TEXTLEN];     // Brief comment
+    char           opinfo[3][TEXTLEN];   // Comments to command's operands
+    int            cmdtype;              // One of C_xxx
+    int            memtype;              // Type of addressed variable in memory
+    int            nprefix;              // Number of prefixes
+    int            indexed;              // Address contains register(s)
+    ulong          jmpconst;             // Constant jump address
+    ulong          jmptable;             // Possible address of switch table
+    ulong          adrconst;             // Constant part of address
+    ulong          immconst;             // Immediate constant
+    int            zeroconst;            // Whether contains zero constant
+    int            fixupoffset;          // Possible offset of 32-bit fixups
+    int            fixupsize;            // Possible total size of fixups or 0
+    ulong          jmpaddr;              // Destination of jump/call/return
+    int            condition;            // 0xFF:unconditional, 0:false, 1:true
+    int            error;                // Error while disassembling command
+    int            warnings;             // Combination of DAW_xxx
+    int            optype[3];            // Type of operand (extended set DEC_xxx)
+    int            opsize[3];            // Size of operand, bytes
+    int            opgood[3];            // Whether address and data valid
+    ulong          opaddr[3];            // Address if memory, index if register
+    ulong          opdata[3];            // Actual value (only integer operands)
+    t_operand      op[3];                // Full description of operand
+    ulong          regdata[8];           // Registers after command is executed
+    int            regstatus[8];         // Status of registers, one of RST_xxx
+    ulong          addrdata;             // Traced memory address
+    int            addrstatus;           // Status of addrdata, one of RST_xxx
+    ulong          regstack[NREGSTACK];  // Stack tracing buffer
+    int            rststatus[NREGSTACK]; // Status of stack items
+    int            nregstack;            // Number of items in stack trace buffer
+    ulong          reserved[29];         // Reserved for plugin compatibility
 } t_disasm;
 
-extc ulong   cdecl Disasm(uchar *src,ulong srcsize,ulong srcip,uchar *srcdec,t_disasm *disasm,int disasmmode,ulong threadid);
-extc ulong   cdecl Disassembleback(uchar *block,ulong base,ulong size,ulong ip,int n,int usedec);
-extc ulong   cdecl Disassembleforward(uchar *block,ulong base,ulong size,ulong ip,int n,int usedec);
-extc int     cdecl Issuspicious(char *cmd,ulong size,ulong ip,ulong threadid,t_reg *preg,char *s);
-extc int     cdecl Isfilling(ulong offset,char *data,ulong size,ulong align);
+extc ulong   cdecl Disasm(uchar* src, ulong srcsize, ulong srcip, uchar* srcdec, t_disasm* disasm, int disasmmode, ulong threadid);
+extc ulong   cdecl Disassembleback(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec);
+extc ulong   cdecl Disassembleforward(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec);
+extc int     cdecl Issuspicious(char* cmd, ulong size, ulong ip, ulong threadid, t_reg* preg, char* s);
+extc int     cdecl Isfilling(ulong offset, char* data, ulong size, ulong align);
 extc int     cdecl Isprefix(int c);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// ASSEMBLY FUNCTIONS //////////////////////////////
 
-extc int     cdecl Assemble(char *cmd,ulong ip,t_asmmodel *model,int attempt,int constsize,char *errtext);
-extc int     cdecl Checkcondition(int code,ulong flags);
+extc int     cdecl Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt, int constsize, char* errtext);
+extc int     cdecl Checkcondition(int code, ulong flags);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// EXPRESSIONS //////////////////////////////////
 
-typedef struct t_result {              // Result of expression's evaluation
-  int            type;                 // Type of expression, DEC(R)_xxx
-  int            dtype;                // Type of data, DEC_xxx
-  union {
-    uchar        data[10];             // Binary form of expression's value
-    ulong        u;                    // Value as unsigned integer
-    long         l;                    // Value as signed integer
-    long double  f; };                 // Value as 80-bit float
-  union {
-    char         value[TEXTLEN];       // ASCII form of expression's value
-    wchar_t      wvalue[TEXTLEN/2]; }; // UNICODE form of expression's value
-  ulong          lvaddr;               // Address of lvalue or NULL
+typedef struct t_result                // Result of expression's evaluation
+{
+    int            type;                 // Type of expression, DEC(R)_xxx
+    int            dtype;                // Type of data, DEC_xxx
+    union
+    {
+        uchar        data[10];             // Binary form of expression's value
+        ulong        u;                    // Value as unsigned integer
+        long         l;                    // Value as signed integer
+        long double  f;
+    };                 // Value as 80-bit float
+    union
+    {
+        char         value[TEXTLEN];       // ASCII form of expression's value
+        wchar_t      wvalue[TEXTLEN / 2];
+    }; // UNICODE form of expression's value
+    ulong          lvaddr;               // Address of lvalue or NULL
 } t_result;
 
-extc int     cdecl Expression(t_result *result,char *expression,int a,int b,uchar *data,ulong database,ulong datasize,ulong threadid);
+extc int     cdecl Expression(t_result* result, char* expression, int a, int b, uchar* data, ulong database, ulong datasize, ulong threadid);
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// THREAD FUNCTIONS ///////////////////////////////
 
-typedef struct t_thread {              // Information about active threads
-  ulong          threadid;             // Thread identifier
-  ulong          dummy;                // Always 1
-  ulong          type;                 // Service information, TY_xxx
-  HANDLE         thread;               // Thread handle
-  ulong          datablock;            // Per-thread data block
-  ulong          entry;                // Thread entry point
-  ulong          stacktop;             // Working variable of Listmemory()
-  ulong          stackbottom;          // Working variable of Listmemory()
-  CONTEXT        context;              // Actual context of the thread
-  t_reg          reg;                  // Actual contents of registers
-  int            regvalid;             // Whether reg is valid
-  t_reg          oldreg;               // Previous contents of registers
-  int            oldregvalid;          // Whether oldreg is valid
-  int            suspendcount;         // Suspension count (may be negative)
-  long           usertime;             // Time in user mode, 1/10th ms, or -1
-  long           systime;              // Time in system mode, 1/10th ms, or -1
-  ulong          reserved[16];         // Reserved for future compatibility
+typedef struct t_thread                // Information about active threads
+{
+    ulong          threadid;             // Thread identifier
+    ulong          dummy;                // Always 1
+    ulong          type;                 // Service information, TY_xxx
+    HANDLE         thread;               // Thread handle
+    ulong          datablock;            // Per-thread data block
+    ulong          entry;                // Thread entry point
+    ulong          stacktop;             // Working variable of Listmemory()
+    ulong          stackbottom;          // Working variable of Listmemory()
+    CONTEXT        context;              // Actual context of the thread
+    t_reg          reg;                  // Actual contents of registers
+    int            regvalid;             // Whether reg is valid
+    t_reg          oldreg;               // Previous contents of registers
+    int            oldregvalid;          // Whether oldreg is valid
+    int            suspendcount;         // Suspension count (may be negative)
+    long           usertime;             // Time in user mode, 1/10th ms, or -1
+    long           systime;              // Time in system mode, 1/10th ms, or -1
+    ulong          reserved[16];         // Reserved for future compatibility
 } t_thread;
 
 extc HWND    cdecl Createthreadwindow(void);
 extc t_thread* cdecl Findthread(ulong threadid);
-extc int     cdecl Decodethreadname(char *s,ulong threadid,int mode);
+extc int     cdecl Decodethreadname(char* s, ulong threadid, int mode);
 extc ulong   cdecl Getcputhreadid(void);
 extc ulong   cdecl Runsinglethread(ulong threadid);
 extc void    cdecl Restoreallthreads(void);
@@ -864,33 +883,35 @@ extc void    cdecl Restoreallthreads(void);
 
 #define MM_RESILENT    (MM_RESTORE|MM_SILENT)
 
-typedef struct t_memory {              // Memory block descriptor
-  ulong          base;                 // Base address of memory block
-  ulong          size;                 // Size of block
-  ulong          type;                 // Service information, TY_xxx
-  ulong          owner;                // Address of owner of the memory
-  ulong          initaccess;           // Initial read/write access
-  ulong          access;               // Actual status and read/write access
-  ulong          threadid;             // Block belongs to this thread or 0
-  char           sect[SHORTLEN];       // Name of module section
-  uchar          *copy;                // Copy used in CPU window or NULL
-  ulong          reserved[8];          // Reserved for plugin compatibility
+typedef struct t_memory                // Memory block descriptor
+{
+    ulong          base;                 // Base address of memory block
+    ulong          size;                 // Size of block
+    ulong          type;                 // Service information, TY_xxx
+    ulong          owner;                // Address of owner of the memory
+    ulong          initaccess;           // Initial read/write access
+    ulong          access;               // Actual status and read/write access
+    ulong          threadid;             // Block belongs to this thread or 0
+    char           sect[SHORTLEN];       // Name of module section
+    uchar*          copy;                // Copy used in CPU window or NULL
+    ulong          reserved[8];          // Reserved for plugin compatibility
 } t_memory;
 
-typedef struct t_heap {                // Heap block descriptor
-  ulong          base;                 // Base address of heap block
-  ulong          size;                 // Size of heap block
-  ulong          type;                 // Service information, TY_xxx
-  ulong          parent;               // Handle of heap descriptor block
+typedef struct t_heap                  // Heap block descriptor
+{
+    ulong          base;                 // Base address of heap block
+    ulong          size;                 // Size of heap block
+    ulong          type;                 // Service information, TY_xxx
+    ulong          parent;               // Handle of heap descriptor block
 } t_heap;
 
 extc int     cdecl Listmemory(void);
 extc t_memory* cdecl Findmemory(ulong addr);
-extc int     cdecl Guardmemory(ulong base,ulong size,int guard);
-extc void    cdecl Havecopyofmemory(uchar *copy,ulong base,ulong size);
-extc ulong   cdecl Readmemory(void *buf,ulong addr,ulong size,int mode);
-extc ulong   cdecl Writememory(void *buf,ulong addr,ulong size,int mode);
-extc ulong   cdecl Readcommand(ulong ip,char *cmd);
+extc int     cdecl Guardmemory(ulong base, ulong size, int guard);
+extc void    cdecl Havecopyofmemory(uchar* copy, ulong base, ulong size);
+extc ulong   cdecl Readmemory(void* buf, ulong addr, ulong size, int mode);
+extc ulong   cdecl Writememory(void* buf, ulong addr, ulong size, int mode);
+extc ulong   cdecl Readcommand(ulong ip, char* cmd);
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// MODULE FUNCTIONS ///////////////////////////////
@@ -902,102 +923,112 @@ extc ulong   cdecl Readcommand(ulong ip,char *cmd);
 #define JT_COND        1               // Conditional jump
 #define JT_SWITCH      2               // Jump via switch table
 
-typedef struct t_ahint {               // User-supplied hint for analysis
-  ulong          addr;                 // Hint address
-  ulong          size;                 // Hint size
-  ulong          type;                 // Hint type, bits from DEC_TYPEMASK
+typedef struct t_ahint                 // User-supplied hint for analysis
+{
+    ulong          addr;                 // Hint address
+    ulong          size;                 // Hint size
+    ulong          type;                 // Hint type, bits from DEC_TYPEMASK
 } t_ahint;
 
-typedef struct t_stringtable {         // Pointers to string resources
-  ulong          name;                 // Name of block of strings
-  ulong          language;             // Language identifier
-  ulong          addr;                 // Address of block in memory
-  ulong          size;                 // Size of block in memory
+typedef struct t_stringtable           // Pointers to string resources
+{
+    ulong          name;                 // Name of block of strings
+    ulong          language;             // Language identifier
+    ulong          addr;                 // Address of block in memory
+    ulong          size;                 // Size of block in memory
 } t_stringtable;
 
-typedef struct t_fixup {
-  ulong          base;                 // Address of fixup
-  ulong          size;                 // Size of fixup (usually 2 or 4 bytes)
+typedef struct t_fixup
+{
+    ulong          base;                 // Address of fixup
+    ulong          size;                 // Size of fixup (usually 2 or 4 bytes)
 } t_fixup;
 
-typedef struct t_symvar {              // Symbolic variable from debug data
-  int            next;                 // Index of next variable in chain or -1
-  ushort         kind;                 // Kind of variable
-  union {
-    ulong        type;                 // Type of variable
-    ulong        regs; };              // Registers in optvar
-  union {
-    ulong        addr;                 // Address or description of registers
-    long         offset; };            // Offset for EBP-relative data
-  ulong          size;                 // Size of variable or optvar data
-  int            optvar;               // Index of optvar chain or -1
-  ulong          nameaddr;             // NM_DEBUG address of var's name
+typedef struct t_symvar                // Symbolic variable from debug data
+{
+    int            next;                 // Index of next variable in chain or -1
+    ushort         kind;                 // Kind of variable
+    union
+    {
+        ulong        type;                 // Type of variable
+        ulong        regs;
+    };              // Registers in optvar
+    union
+    {
+        ulong        addr;                 // Address or description of registers
+        long         offset;
+    };            // Offset for EBP-relative data
+    ulong          size;                 // Size of variable or optvar data
+    int            optvar;               // Index of optvar chain or -1
+    ulong          nameaddr;             // NM_DEBUG address of var's name
 } t_symvar;
 
-typedef struct t_jdest {               // Element of jump data
-  char           type;                 // Type of jump, one of JT_xxx
-  ulong          from;                 // Jump source
-  ulong          to;                   // Jump destination
+typedef struct t_jdest                 // Element of jump data
+{
+    char           type;                 // Type of jump, one of JT_xxx
+    ulong          from;                 // Jump source
+    ulong          to;                   // Jump destination
 } t_jdest;
 
-typedef struct t_module {              // Executable module descriptor
-  ulong          base;                 // Base address of module
-  ulong          size;                 // Size occupied by module
-  ulong          type;                 // Service information, TY_xxx
-  ulong          codebase;             // Base address of module code block
-  ulong          codesize;             // Size of module code block
-  ulong          resbase;              // Base address of resources
-  ulong          ressize;              // Size of resources
-  t_stringtable  *stringtable;         // Pointers to string resources or NULL
-  int            nstringtable;         // Actual number of used stringtable
-  int            maxstringtable;       // Actual number of allocated stringtable
-  ulong          entry;                // Address of <ModuleEntryPoint> or NULL
-  ulong          database;             // Base address of module data block
-  ulong          idatatable;           // Base address of import data table
-  ulong          idatabase;            // Base address of import data block
-  ulong          edatatable;           // Base address of export data table
-  ulong          edatasize;            // Size of export data table
-  ulong          reloctable;           // Base address of relocation table
-  ulong          relocsize;            // Size of relocation table
-  char           name[SHORTLEN];       // Short name of the module
-  char           path[MAX_PATH];       // Full name of the module
-  int            nsect;                // Number of sections in the module
-  IMAGE_SECTION_HEADER *sect;          // Copy of section headers from file
-  ulong          headersize;           // Total size of headers in executable
-  ulong          fixupbase;            // Base of image in executable file
-  int            nfixup;               // Number of fixups in executable
-  t_fixup        *fixup;               // Extracted fixups or NULL
-  char           *codedec;             // Decoded code features or NULL
-  ulong          codecrc;              // Code CRC for actual decoding
-  char           *hittrace;            // Hit tracing data or NULL
-  char           *hittracecopy;        // Copy of INT3-substituted code
-  char           *datadec;             // Decoded data features or NULL
-  t_table        namelist;             // List of module names
-  t_symvar       *symvar;              // Descriptions of symbolic variables
-  int            nsymvar;              // Actual number of elements in symvar
-  int            maxsymvar;            // Maximal number of elements in symvar
-  char           *globaltypes;         // Global types from debug info
-  ulong          mainentry;            // Address of WinMain() etc. in dbg data
-  ulong          realsfxentry;         // Entry of packed code or NULL
-  int            updatenamelist;       // Request to update namelist
-  ulong          origcodesize;         // Original size of module code block
-  ulong          sfxbase;              // Base of memory block with SFX
-  ulong          sfxsize;              // Size of memory block with SFX
-  int            issystemdll;          // Whether system DLL
-  int            processed;            // 0: not processed, 1: good, -1: bad
-  int            dbghelpsym;           // 1: symbols loaded by dbghelp.dll
-  char           version[NVERS];       // Version of executable file
-  t_jdest        *jddata;              // Recognized jumps within the module
-  int            njddata;              // Number of recognized jumps
-  ulong          reserved[15];         // Reserved for plugin compatibility
+typedef struct t_module                // Executable module descriptor
+{
+    ulong          base;                 // Base address of module
+    ulong          size;                 // Size occupied by module
+    ulong          type;                 // Service information, TY_xxx
+    ulong          codebase;             // Base address of module code block
+    ulong          codesize;             // Size of module code block
+    ulong          resbase;              // Base address of resources
+    ulong          ressize;              // Size of resources
+    t_stringtable*  stringtable;         // Pointers to string resources or NULL
+    int            nstringtable;         // Actual number of used stringtable
+    int            maxstringtable;       // Actual number of allocated stringtable
+    ulong          entry;                // Address of <ModuleEntryPoint> or NULL
+    ulong          database;             // Base address of module data block
+    ulong          idatatable;           // Base address of import data table
+    ulong          idatabase;            // Base address of import data block
+    ulong          edatatable;           // Base address of export data table
+    ulong          edatasize;            // Size of export data table
+    ulong          reloctable;           // Base address of relocation table
+    ulong          relocsize;            // Size of relocation table
+    char           name[SHORTLEN];       // Short name of the module
+    char           path[MAX_PATH];       // Full name of the module
+    int            nsect;                // Number of sections in the module
+    IMAGE_SECTION_HEADER* sect;          // Copy of section headers from file
+    ulong          headersize;           // Total size of headers in executable
+    ulong          fixupbase;            // Base of image in executable file
+    int            nfixup;               // Number of fixups in executable
+    t_fixup*        fixup;               // Extracted fixups or NULL
+    char*           codedec;             // Decoded code features or NULL
+    ulong          codecrc;              // Code CRC for actual decoding
+    char*           hittrace;            // Hit tracing data or NULL
+    char*           hittracecopy;        // Copy of INT3-substituted code
+    char*           datadec;             // Decoded data features or NULL
+    t_table        namelist;             // List of module names
+    t_symvar*       symvar;              // Descriptions of symbolic variables
+    int            nsymvar;              // Actual number of elements in symvar
+    int            maxsymvar;            // Maximal number of elements in symvar
+    char*           globaltypes;         // Global types from debug info
+    ulong          mainentry;            // Address of WinMain() etc. in dbg data
+    ulong          realsfxentry;         // Entry of packed code or NULL
+    int            updatenamelist;       // Request to update namelist
+    ulong          origcodesize;         // Original size of module code block
+    ulong          sfxbase;              // Base of memory block with SFX
+    ulong          sfxsize;              // Size of memory block with SFX
+    int            issystemdll;          // Whether system DLL
+    int            processed;            // 0: not processed, 1: good, -1: bad
+    int            dbghelpsym;           // 1: symbols loaded by dbghelp.dll
+    char           version[NVERS];       // Version of executable file
+    t_jdest*        jddata;              // Recognized jumps within the module
+    int            njddata;              // Number of recognized jumps
+    ulong          reserved[15];         // Reserved for plugin compatibility
 } t_module;
 
 extc t_module* cdecl Findmodule(ulong addr);
-extc t_fixup* cdecl Findfixup(t_module *pmod,ulong addr);
-extc uchar*  cdecl Finddecode(ulong addr,ulong *psize);
-extc ulong   cdecl Findfileoffset(t_module *pmod,ulong addr);
-extc int     cdecl Decoderange(ulong addr,ulong size,char *s);
-extc int     cdecl Analysecode(t_module *pm);
+extc t_fixup* cdecl Findfixup(t_module* pmod, ulong addr);
+extc uchar*  cdecl Finddecode(ulong addr, ulong* psize);
+extc ulong   cdecl Findfileoffset(t_module* pmod, ulong addr);
+extc int     cdecl Decoderange(ulong addr, ulong size, char* s);
+extc int     cdecl Analysecode(t_module* pm);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////// DUMP /////////////////////////////////////
@@ -1031,34 +1062,35 @@ extc int     cdecl Analysecode(t_module *pm);
 #define MT_SEARCH      0x0008          // Search, Next
 #define MT_DHISTORY    0x0010          // Previous, Next in history
 
-typedef ulong SPECFUNC(char *,ulong,ulong,ulong,t_disasm *,int);
+typedef ulong SPECFUNC(char*, ulong, ulong, ulong, t_disasm*, int);
 
-typedef struct t_dump {                // Current status of dump window
-  t_table        table;                // Treat dump window as custom table
-  int            dimmed;               // Draw in lowcolor if nonzero
-  ulong          threadid;             // Use decoding and registers if not 0
-  int            dumptype;             // Current dump type, DU_xxx+count+size
-  SPECFUNC       *specdump;            // Decoder of DU_SPEC dump types
-  int            menutype;             // Standard menues, MT_xxx
-  int            itemwidth;            // Length of displayed item, characters
-  int            showstackframes;      // Show stack frames in address dump
-  int            showstacklocals;      // Show names of locals in stack
-  int            commentmode;          // 0: comment, 1: source, 2: profile
-  char           filename[MAX_PATH];   // Name of displayed or backup file
-  ulong          base;                 // Start of memory block or file
-  ulong          size;                 // Size of memory block or file
-  ulong          addr;                 // Address of first displayed byte
-  ulong          lastaddr;             // Address of last displayed byte + 1
-  ulong          sel0;                 // Address of first selected byte
-  ulong          sel1;                 // Last selected byte (not included!)
-  ulong          startsel;             // Start of last selection
-  int            captured;             // Mouse is captured by dump
-  ulong          reladdr;              // Addresses relative to this
-  char           relname[SHORTLEN];    // Symbol for relative zero address base
-  uchar          *filecopy;            // Copy of the file or NULL
-  uchar          *backup;              // Old backup of memory/file or NULL
-  int            runtraceoffset;       // Offset back in run trace
-  ulong          reserved[8];          // Reserved for the future extentions
+typedef struct t_dump                  // Current status of dump window
+{
+    t_table        table;                // Treat dump window as custom table
+    int            dimmed;               // Draw in lowcolor if nonzero
+    ulong          threadid;             // Use decoding and registers if not 0
+    int            dumptype;             // Current dump type, DU_xxx+count+size
+    SPECFUNC*       specdump;            // Decoder of DU_SPEC dump types
+    int            menutype;             // Standard menues, MT_xxx
+    int            itemwidth;            // Length of displayed item, characters
+    int            showstackframes;      // Show stack frames in address dump
+    int            showstacklocals;      // Show names of locals in stack
+    int            commentmode;          // 0: comment, 1: source, 2: profile
+    char           filename[MAX_PATH];   // Name of displayed or backup file
+    ulong          base;                 // Start of memory block or file
+    ulong          size;                 // Size of memory block or file
+    ulong          addr;                 // Address of first displayed byte
+    ulong          lastaddr;             // Address of last displayed byte + 1
+    ulong          sel0;                 // Address of first selected byte
+    ulong          sel1;                 // Last selected byte (not included!)
+    ulong          startsel;             // Start of last selection
+    int            captured;             // Mouse is captured by dump
+    ulong          reladdr;              // Addresses relative to this
+    char           relname[SHORTLEN];    // Symbol for relative zero address base
+    uchar*          filecopy;            // Copy of the file or NULL
+    uchar*          backup;              // Old backup of memory/file or NULL
+    int            runtraceoffset;       // Offset back in run trace
+    ulong          reserved[8];          // Reserved for the future extentions
 } t_dump;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1104,39 +1136,40 @@ typedef struct t_dump {                // Current status of dump window
 #define BKUP_SAVECOPY  6               // Save backup copy to file
 #define BKUP_DELETE    7               // Delete backup copy
 
-extc int     cdecl Registerotclass(char *classname,char *iconname,WNDPROC classproc);
-extc HWND    cdecl Newtablewindow(t_table *pt,int nlines,int maxcolumns,char *winclass,char *wintitle);
-extc HWND    cdecl Quicktablewindow(t_table *pt,int nlines,int maxcolumns,char *winclass,char *wintitle);
-extc HWND    cdecl Createdumpwindow(char *name,ulong base,ulong size,ulong addr,int type,SPECFUNC *specdump);
-extc void    cdecl Setdumptype(t_dump *pd,int dumptype);
-extc void    cdecl Dumpbackup(t_dump *pd,int action);
-extc int     cdecl Broadcast(UINT msg,WPARAM wp,LPARAM lp);
+extc int     cdecl Registerotclass(char* classname, char* iconname, WNDPROC classproc);
+extc HWND    cdecl Newtablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle);
+extc HWND    cdecl Quicktablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle);
+extc HWND    cdecl Createdumpwindow(char* name, ulong base, ulong size, ulong addr, int type, SPECFUNC* specdump);
+extc void    cdecl Setdumptype(t_dump* pd, int dumptype);
+extc void    cdecl Dumpbackup(t_dump* pd, int action);
+extc int     cdecl Broadcast(UINT msg, WPARAM wp, LPARAM lp);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA CONVERSION FUNCTIONS ///////////////////////////
 
-extc ulong   cdecl Compress(uchar *bufin,ulong nbufin,uchar *bufout,ulong nbufout);
-extc ulong   cdecl Getoriginaldatasize(char *bufin,ulong nbufin);
-extc ulong   cdecl Decompress(uchar *bufin,ulong nbufin,uchar *bufout,ulong nbufout);
-extc ulong   cdecl Calculatecrc(uchar *copy,ulong base,ulong size,t_module *pmod,ulong fixupoffset);
+extc ulong   cdecl Compress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout);
+extc ulong   cdecl Getoriginaldatasize(char* bufin, ulong nbufin);
+extc ulong   cdecl Decompress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout);
+extc ulong   cdecl Calculatecrc(uchar* copy, ulong base, ulong size, t_module* pmod, ulong fixupoffset);
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// REFERENCES AND SEARCH /////////////////////////////
 
-typedef struct t_ref {                 // Description of reference
-  ulong          addr;                 // Address of reference
-  ulong          size;                 // 1: single command, otherwise size
-  ulong          type;                 // Type of reference, TY_xxx
-  ulong          dest;                 // Destination of call
+typedef struct t_ref                   // Description of reference
+{
+    ulong          addr;                 // Address of reference
+    ulong          size;                 // 1: single command, otherwise size
+    ulong          type;                 // Type of reference, TY_xxx
+    ulong          dest;                 // Destination of call
 } t_ref;
 
-extc int     cdecl Findreferences(ulong base,ulong size,ulong addr0,ulong addr1,ulong origin,int recurseonjump,char *title);
-extc int     cdecl Findstrings(ulong base,ulong size,ulong origin,char *title);
-extc int     cdecl Findalldllcalls(t_dump *pd,ulong origin,char *title);
-extc int     cdecl Findallcommands(t_dump *pd,t_asmmodel *model,ulong origin,char *title);
-extc int     cdecl Findallsequences(t_dump *pd,t_extmodel model[NSEQ][NMODELS],ulong origin,char *title);
+extc int     cdecl Findreferences(ulong base, ulong size, ulong addr0, ulong addr1, ulong origin, int recurseonjump, char* title);
+extc int     cdecl Findstrings(ulong base, ulong size, ulong origin, char* title);
+extc int     cdecl Findalldllcalls(t_dump* pd, ulong origin, char* title);
+extc int     cdecl Findallcommands(t_dump* pd, t_asmmodel* model, ulong origin, char* title);
+extc int     cdecl Findallsequences(t_dump* pd, t_extmodel model[NSEQ][NMODELS], ulong origin, char* title);
 extc ulong   cdecl Walkreference(int dir);
-extc ulong   cdecl Walkreferenceex(int dir,ulong *size);
+extc ulong   cdecl Walkreferenceex(int dir, ulong* size);
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////// BREAKPOINT AND TRACE FUNCTIONS ////////////////////////
@@ -1188,65 +1221,68 @@ extc ulong   cdecl Walkreferenceex(int dir,ulong *size);
 #define COND_MASK      0x3F            // Mask for conditional break type bits
 #define COND_FILLING   0x40            // Used to assure that byte is non-zero
 
-typedef struct t_bpoint {              // Description of INT3 breakpoint
-  ulong          addr;                 // Address of breakpoint
-  ulong          dummy;                // Always 1
-  ulong          type;                 // Type of breakpoint, TY_xxx
-  char           cmd;                  // Old value of command
-  ulong          passcount;            // Actual pass count
+typedef struct t_bpoint                // Description of INT3 breakpoint
+{
+    ulong          addr;                 // Address of breakpoint
+    ulong          dummy;                // Always 1
+    ulong          type;                 // Type of breakpoint, TY_xxx
+    char           cmd;                  // Old value of command
+    ulong          passcount;            // Actual pass count
 } t_bpoint;
 
-typedef struct t_hardbpoint {          // Description of hardware breakpoint
-  ulong          addr;                 // Base address of hardware breakpoint
-  int            size;                 // Size of hardware breakpoint
-  int            type;                 // Type of breakpoint, one of HB_xxx
-  ulong          reserved[4];          // Reserved for the future
+typedef struct t_hardbpoint            // Description of hardware breakpoint
+{
+    ulong          addr;                 // Base address of hardware breakpoint
+    int            size;                 // Size of hardware breakpoint
+    int            type;                 // Type of breakpoint, one of HB_xxx
+    ulong          reserved[4];          // Reserved for the future
 } t_hardbpoint;
 
-extc int     cdecl Setbreakpoint(ulong addr,ulong type,uchar cmd);
-extc int     cdecl Setbreakpointext(ulong addr,ulong type,char cmd,ulong passcount);
-extc int     cdecl Manualbreakpoint(ulong addr,int key,int shiftkey,ulong nametype,int font);
-extc void    cdecl Deletebreakpoints(ulong addr0,ulong addr1,int silent);
+extc int     cdecl Setbreakpoint(ulong addr, ulong type, uchar cmd);
+extc int     cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcount);
+extc int     cdecl Manualbreakpoint(ulong addr, int key, int shiftkey, ulong nametype, int font);
+extc void    cdecl Deletebreakpoints(ulong addr0, ulong addr1, int silent);
 extc ulong   cdecl Getbreakpointtype(ulong addr);
-extc ulong   cdecl Getbreakpointtypecount(ulong addr,ulong *passcount);
-extc ulong   cdecl Getnextbreakpoint(ulong addr,ulong *type,int *cmd);
-extc void    cdecl Tempbreakpoint(ulong addr,int mode);
+extc ulong   cdecl Getbreakpointtypecount(ulong addr, ulong* passcount);
+extc ulong   cdecl Getnextbreakpoint(ulong addr, ulong* type, int* cmd);
+extc void    cdecl Tempbreakpoint(ulong addr, int mode);
 extc int     cdecl Hardbreakpoints(int closeondelete);
-extc int     cdecl Sethardwarebreakpoint(ulong addr,int size,int type);
+extc int     cdecl Sethardwarebreakpoint(ulong addr, int size, int type);
 extc int     cdecl Deletehardwarebreakpoint(int index);
 extc int     cdecl Deletehardwarebreakbyaddr(ulong addr);
-extc int     cdecl Setmembreakpoint(int type,ulong addr,ulong size);
-extc uchar*  cdecl Findhittrace(ulong addr,uchar **ptracecopy,ulong *psize);
-extc int     cdecl Modifyhittrace(ulong addr0,ulong addr1,int mode);
-extc ulong   cdecl Isretaddr(ulong retaddr,ulong *procaddr);
+extc int     cdecl Setmembreakpoint(int type, ulong addr, ulong size);
+extc uchar*  cdecl Findhittrace(ulong addr, uchar** ptracecopy, ulong* psize);
+extc int     cdecl Modifyhittrace(ulong addr0, ulong addr1, int mode);
+extc ulong   cdecl Isretaddr(ulong retaddr, ulong* procaddr);
 extc HWND    cdecl Creatertracewindow(void);
-extc void    cdecl Settracecondition(char *cond,int onsuspicious,ulong in0,ulong in1,ulong out0,ulong out1);
+extc void    cdecl Settracecondition(char* cond, int onsuspicious, ulong in0, ulong in1, ulong out0, ulong out1);
 extc void    cdecl Settracecount(ulong count);
-extc void    cdecl Settracepauseoncommands(char *cmdset);
-extc int     cdecl Startruntrace(t_reg *preg);
+extc void    cdecl Settracepauseoncommands(char* cmdset);
+extc int     cdecl Startruntrace(t_reg* preg);
 extc void    cdecl Deleteruntrace(void);
 extc int     cdecl Runtracesize(void);
-extc int     cdecl Findprevruntraceip(ulong ip,int startback);
-extc int     cdecl Findnextruntraceip(ulong ip,int startback);
-extc int     cdecl Getruntraceregisters(int nback,t_reg *preg,t_reg *pold,char *cmd,char *comment);
-extc int     cdecl Getruntraceprofile(ulong addr,ulong size,ulong *profile);
+extc int     cdecl Findprevruntraceip(ulong ip, int startback);
+extc int     cdecl Findnextruntraceip(ulong ip, int startback);
+extc int     cdecl Getruntraceregisters(int nback, t_reg* preg, t_reg* pold, char* cmd, char* comment);
+extc int     cdecl Getruntraceprofile(ulong addr, ulong size, ulong* profile);
 extc void    cdecl Scrollruntracewindow(int back);
-extc HWND    cdecl Createprofilewindow(ulong base,ulong size);
+extc HWND    cdecl Createprofilewindow(ulong base, ulong size);
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// CODE INJECTION ////////////////////////////////
 
-typedef int INJECTANSWER(char *data,ulong datasize,ulong parm2);
+typedef int INJECTANSWER(char* data, ulong datasize, ulong parm2);
 
-typedef struct t_inject {              // Description of injected code
-  ulong          codesize;             // Size of code, including INT3
-  char           *code;                // Pointer to code
-  int            stacksize;            // Stack size to save
-  int            datatype;             // 0: in/out, 1: in, 2: out
+typedef struct t_inject                // Description of injected code
+{
+    ulong          codesize;             // Size of code, including INT3
+    char*           code;                // Pointer to code
+    int            stacksize;            // Stack size to save
+    int            datatype;             // 0: in/out, 1: in, 2: out
 } t_inject;
 
-extc int     cdecl Injectcode(ulong threadid,t_inject *inject,char *data,ulong datasize,ulong parm1,ulong parm2,INJECTANSWER *answerfunc);
+extc int     cdecl Injectcode(ulong threadid, t_inject* inject, char* data, ulong datasize, ulong parm1, ulong parm2, INJECTANSWER* answerfunc);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1266,16 +1302,16 @@ extc int     cdecl Injectcode(ulong threadid,t_inject *inject,char *data,ulong d
 #define CPU_REDRAW     0x08000         // Redraw CPU window immediately
 #define CPU_NOFOCUS    0x10000         // Don't assign focus to main window
 
-extc void    cdecl Setcpu(ulong threadid,ulong asmaddr,ulong dumpaddr,ulong stackaddr,int mode);
-extc void    cdecl Setdisasm(ulong asmaddr,ulong selsize,int mode);
+extc void    cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode);
+extc void    cdecl Setdisasm(ulong asmaddr, ulong selsize, int mode);
 extc void    cdecl Redrawdisassembler(void);
-extc void    cdecl Getdisassemblerrange(ulong *pbase,ulong *psize);
+extc void    cdecl Getdisassemblerrange(ulong* pbase, ulong* psize);
 extc ulong   cdecl Findprocbegin(ulong addr);
 extc ulong   cdecl Findprocend(ulong addr);
 extc ulong   cdecl Findprevproc(ulong addr);
 extc ulong   cdecl Findnextproc(ulong addr);
-extc int     cdecl Getproclimits(ulong addr,ulong *start,ulong *end);
-extc void    cdecl Sendshortcut(int where,ulong addr,int msg,int ctrl,int shift,int vkcode);
+extc int     cdecl Getproclimits(ulong addr, ulong* start, ulong* end);
+extc void    cdecl Sendshortcut(int where, ulong addr, int msg, int ctrl, int shift, int vkcode);
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// PROCESS CONTROL ////////////////////////////////
@@ -1287,17 +1323,18 @@ extc void    cdecl Sendshortcut(int where,ulong addr,int msg,int ctrl,int shift,
 #define STEP_IN        3               // Step in
 #define STEP_SKIP      4               // Skip sequence
 
-typedef enum t_status {                // Thread/process status
-  STAT_NONE=0,                         // Thread/process is empty
-  STAT_STOPPED,                        // Thread/process suspended
-  STAT_EVENT,                          // Processing debug event, process paused
-  STAT_RUNNING,                        // Thread/process running
-  STAT_FINISHED,                       // Process finished
-  STAT_CLOSING                         // Process is requested to terminate
+typedef enum t_status                  // Thread/process status
+{
+    STAT_NONE = 0,                       // Thread/process is empty
+    STAT_STOPPED,                        // Thread/process suspended
+    STAT_EVENT,                          // Processing debug event, process paused
+    STAT_RUNNING,                        // Thread/process running
+    STAT_FINISHED,                       // Process finished
+    STAT_CLOSING                         // Process is requested to terminate
 } t_status;
 
 extc t_status cdecl Getstatus(void);
-extc int     cdecl Go(ulong threadid,ulong tilladdr,int stepmode,int givechance,int backupregs);
+extc int     cdecl Go(ulong threadid, ulong tilladdr, int stepmode, int givechance, int backupregs);
 extc int     cdecl Suspendprocess(int processevents);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1308,63 +1345,65 @@ extc int     cdecl Suspendprocess(int processevents);
 #define DASC_ASCII     2               // Force ASCII
 #define DASC_PASCAL    3               // Force Pascal
 
-extc uchar*  cdecl Findknownfunction(ulong addr,int direct,int level,char *fname);
-extc int     cdecl Decodeknownargument(ulong addr,uchar *arg,ulong value,int valid,char *s,char *mask,uchar *pset[]);
-extc char    cdecl *Findunknownfunction(ulong ip,char *code,char *dec,ulong size,char *fname);
-extc int     cdecl Decodeascii(ulong value,char *s,int len,int mode);
-extc int     cdecl Decodeunicode(ulong value,char *s,int len);
+extc uchar*  cdecl Findknownfunction(ulong addr, int direct, int level, char* fname);
+extc int     cdecl Decodeknownargument(ulong addr, uchar* arg, ulong value, int valid, char* s, char* mask, uchar* pset[]);
+extc char    cdecl* Findunknownfunction(ulong ip, char* code, char* dec, ulong size, char* fname);
+extc int     cdecl Decodeascii(ulong value, char* s, int len, int mode);
+extc int     cdecl Decodeunicode(ulong value, char* s, int len);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// SOURCE CODE SUPPORT //////////////////////////////
 
 #define FIRST_CODE_LINE 0xFFFFFFFF     // First available source line
 
-typedef struct t_sourceline {          // Source line descriptor
-  ulong          addr;                 // Start address of corresponding code
-  ulong          size;                 // Code size
-  ulong          srcname;              // Index of source name (as NM_DEBUG)
-  ulong          line;                 // 0-based line number
+typedef struct t_sourceline            // Source line descriptor
+{
+    ulong          addr;                 // Start address of corresponding code
+    ulong          size;                 // Code size
+    ulong          srcname;              // Index of source name (as NM_DEBUG)
+    ulong          line;                 // 0-based line number
 } t_sourceline;
 
-extc HWND    cdecl Showsourcefromaddress(ulong addr,int show);
-extc int     cdecl Getresourcestring(t_module *pm,ulong id,char *s);
+extc HWND    cdecl Showsourcefromaddress(ulong addr, int show);
+extc int     cdecl Getresourcestring(t_module* pm, ulong id, char* s);
 extc t_sourceline* cdecl Getlinefromaddress(ulong addr);
-extc ulong   cdecl Getaddressfromline(ulong addr0,ulong addr1,char *path,ulong line);
-extc int     cdecl Getsourcefilelimits(ulong nameaddr,ulong *addr0,ulong *addr1);
-extc int     cdecl Decodefullvarname(t_module *pmod,t_symvar *psym,int offset,char *name);
-extc int     cdecl Getbprelname(t_module *pmod,ulong addr,long offset,char *s,int nsymb);
+extc ulong   cdecl Getaddressfromline(ulong addr0, ulong addr1, char* path, ulong line);
+extc int     cdecl Getsourcefilelimits(ulong nameaddr, ulong* addr0, ulong* addr1);
+extc int     cdecl Decodefullvarname(t_module* pmod, t_symvar* psym, int offset, char* name);
+extc int     cdecl Getbprelname(t_module* pmod, ulong addr, long offset, char* s, int nsymb);
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// WATCH SUPPORT /////////////////////////////////
 
 extc HWND    cdecl Createwatchwindow(void);
 extc int     cdecl Deletewatch(int indexone);
-extc int     cdecl Insertwatch(int indexone,char *text);
-extc int     cdecl Getwatch(int indexone,char *text);
+extc int     cdecl Insertwatch(int indexone, char* text);
+extc int     cdecl Getwatch(int indexone, char* text);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// WINDOWS-SPECIFIC FUNCTIONS //////////////////////////
 
 #define MAXNEST        32              // Max allowed code structure nesting
 
-typedef struct t_window {              // Description of window
-  ulong          hwnd;                 // Window's handle
-  ulong          dummy;                // Must be 1
-  ulong          type;                 // Type of window, TY_xxx
-  ulong          parenthw;             // Handle of parent or 0
-  ulong          winproc;              // Address of WinProc or 0
-  ulong          threadid;             // ID of the owning thread
-  ulong          exstyle;              // Extended style
-  ulong          style;                // Style
-  ulong          id;                   // Identifier
-  ulong          classproc;            // Address of default (class) WinProc
-  int            child;                // Index of next child
-  int            level;                // Level in genealogy (0: topmost)
-  int            sibling;              // Index of next sibling
-  int            byparent;             // Index when sorted by parent
-  char           title[TEXTLEN];       // Window's title
-  char           classname[TEXTLEN];   // Class name
-  char           tree[MAXNEST];        // Tree display
+typedef struct t_window                // Description of window
+{
+    ulong          hwnd;                 // Window's handle
+    ulong          dummy;                // Must be 1
+    ulong          type;                 // Type of window, TY_xxx
+    ulong          parenthw;             // Handle of parent or 0
+    ulong          winproc;              // Address of WinProc or 0
+    ulong          threadid;             // ID of the owning thread
+    ulong          exstyle;              // Extended style
+    ulong          style;                // Style
+    ulong          id;                   // Identifier
+    ulong          classproc;            // Address of default (class) WinProc
+    int            child;                // Index of next child
+    int            level;                // Level in genealogy (0: topmost)
+    int            sibling;              // Index of next sibling
+    int            byparent;             // Index when sorted by parent
+    char           title[TEXTLEN];       // Window's title
+    char           classname[TEXTLEN];   // Class name
+    char           tree[MAXNEST];        // Tree display
 } t_window;
 
 extc HWND    cdecl Createwinwindow(void);
@@ -1373,12 +1412,13 @@ extc HWND    cdecl Createwinwindow(void);
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// PATCHES ////////////////////////////////////
 
-typedef struct t_patch {
-  ulong          addr;                 // Base address of patch in memory
-  ulong          size;                 // Size of patch, bytes
-  ulong          type;                 // Type of patch, set of TY_xxx
-  char           orig[TEXTLEN];        // Original code
-  char           mod[TEXTLEN];         // Patched code
+typedef struct t_patch
+{
+    ulong          addr;                 // Base address of patch in memory
+    ulong          size;                 // Size of patch, bytes
+    ulong          type;                 // Type of patch, set of TY_xxx
+    char           orig[TEXTLEN];        // Original code
+    char           mod[TEXTLEN];         // Patched code
 } t_patch;
 
 extc HWND    cdecl Createpatchwindow(void);
@@ -1446,13 +1486,13 @@ extc HWND    cdecl Createpatchwindow(void);
 #define VAL_PATCHES            58      // Table of patches
 #define VAL_HINTS              59      // Sorted data with analysis hints
 
-extc int     cdecl Registerpluginclass(char *classname,char *iconname,HINSTANCE dllinst,WNDPROC classproc);
-extc void    cdecl Unregisterpluginclass(char *classname);
-extc int     cdecl Pluginwriteinttoini(HINSTANCE dllinst,char *key,int value);
-extc int     cdecl Pluginwritestringtoini(HINSTANCE dllinst,char *key,char *s);
-extc int     cdecl Pluginreadintfromini(HINSTANCE dllinst,char *key,int def);
-extc int     cdecl Pluginreadstringfromini(HINSTANCE dllinst,char *key,char *s,char *def);
-extc int     cdecl Pluginsaverecord(ulong tag,ulong size,void *data);
+extc int     cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc);
+extc void    cdecl Unregisterpluginclass(char* classname);
+extc int     cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value);
+extc int     cdecl Pluginwritestringtoini(HINSTANCE dllinst, char* key, char* s);
+extc int     cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def);
+extc int     cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def);
+extc int     cdecl Pluginsaverecord(ulong tag, ulong size, void* data);
 extc int     cdecl Plugingetvalue(int type);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1545,4 +1585,4 @@ extc int     cdecl Plugingetvalue(int type);
 //extc int  _export cdecl ODBG_Pausedex(int reasonex,int dummy,t_reg *reg,
 //                        DEBUG_EVENT *debugevent);
 //extc int  _export cdecl ODBG_Plugincmd(int reason,t_reg *reg,char *cmd);
-                        
+
