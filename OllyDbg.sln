@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OllyDbg", "OllyDbg\OllyDbg.vcxproj", "{8387C1C9-AFBE-4D9D-ADC3-989B2CDF5955}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x64dbg", "x64dbg\x64dbg.vcxproj", "{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8387C1C9-AFBE-4D9D-ADC3-989B2CDF5955}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8387C1C9-AFBE-4D9D-ADC3-989B2CDF5955}.Debug|Win32.Build.0 = Debug|Win32
+		{8387C1C9-AFBE-4D9D-ADC3-989B2CDF5955}.Release|Win32.ActiveCfg = Release|Win32
+		{8387C1C9-AFBE-4D9D-ADC3-989B2CDF5955}.Release|Win32.Build.0 = Release|Win32
+		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Debug|Win32.Build.0 = Debug|Win32
+		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Release|Win32.ActiveCfg = Release|Win32
+		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FEC27593-C8A4-48C4-B9DB-CF5CE172A158}
+	EndGlobalSection
+EndGlobal
