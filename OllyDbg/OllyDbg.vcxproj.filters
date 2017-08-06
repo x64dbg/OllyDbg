@@ -29,5 +29,8 @@
     <ClInclude Include="x64dbg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="loghacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

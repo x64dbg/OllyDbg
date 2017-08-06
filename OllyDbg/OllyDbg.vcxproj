@@ -78,6 +78,7 @@
     <ClCompile Include="x64dbg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="loghacks.h" />
     <ClInclude Include="OllyDbg.h" />
     <ClInclude Include="x64dbg.h" />
   </ItemGroup>

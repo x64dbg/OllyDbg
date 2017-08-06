@@ -3,44 +3,9 @@
 #include "OllyDbg.h"
 #include "x64dbg.h"
 #include <stdarg.h>
+#include "loghacks.h"
 
 //NOTE: SEG_XXX are overloaded. The OllyDbg ones are renamed to ODBG_SEG_XXX
-
-#define dprintf _plugin_logprintf
-#define dputs _plugin_logputs
-
-void dprintf_args(_In_z_ _Printf_format_string_ const char* Format, va_list Args)
-{
-    char buffer[16384];
-    vsnprintf_s(buffer, _TRUNCATE, Format, Args);
-    dprintf("%s", buffer);
-}
-
-#define log(x, ...) dprintf("[" PLUGIN_NAME "] " x, __VA_ARGS__)
-#define ulog(function, ...) \
-    { \
-        log("%s(\n", function); /* log the function name */\
-        logArgs(__VA_ARGS__); /* log the function arguments */\
-        log(") = UNIMPLEMENTED\n"); \
-    }
-
-static inline void processArg(ULONG_PTR arg)
-{
-    log("  0x%p\n", arg);
-}
-
-//no arguments base case
-static inline void logArgs()
-{
-}
-
-//template takes one argument (Arg) and zero or more extra arguments (Args)
-template<typename Arg, typename... Args>
-static inline void logArgs(Arg a1, Args... args)
-{
-    processArg(ULONG_PTR(a1)); //call processArg on the current (first) argument
-    logArgs(args...); //expand the additional arguments -> logArgs(a2, a3, a4) where args = { a2, a3, a4 }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// INFORMATION FUNCTIONS /////////////////////////////
@@ -134,23 +99,24 @@ extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int ns
 
 extc int cdecl Decodecharacter(char* s, uint c) { ulog(__FUNCTION__, s, c) return 0; }
 
-extc int cdecl Printfloat4(char* s, float f) { return 0; }
+extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, s, f) return 0; }
 
-extc int cdecl Printfloat8(char* s, double d) { return 0; }
+extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, s, d) return 0; }
 
-extc int cdecl Printfloat10(char* s, long double ext) { return 0; }
+//TODO: this will break
+extc int cdecl Printfloat10(char* s, long double ext) { __debugbreak(); return 0; }
 
-extc int cdecl Print3dnow(char* s, uchar* f) { return 0; }
+extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, s, f) return 0; }
 
-extc int cdecl Printsse(char* s, char* f) { return 0; }
+extc int cdecl Printsse(char* s, char* f) { ulog(__FUNCTION__, s, f) return 0; }
 
-extc ulong cdecl Followcall(ulong addr) { return 0; }
+extc ulong cdecl Followcall(ulong addr) { ulog(__FUNCTION__, addr) return 0; }
 
-extc int cdecl IstextA(char c) { return 0; }
+extc int cdecl IstextA(char c) { ulog(__FUNCTION__, c) return 0; }
 
-extc int cdecl IstextW(wchar_t w) { return 0; }
+extc int cdecl IstextW(wchar_t w) { ulog(__FUNCTION__, w) return 0; }
 
-extc int cdecl Stringtotext(char* data, int ndata, char* text, int ntext) { return 0; }
+extc int cdecl Stringtotext(char* data, int ndata, char* text, int ntext) { ulog(__FUNCTION__, data, ndata, text, ntext) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// DATA INPUT FUNCTIONS /////////////////////////////
