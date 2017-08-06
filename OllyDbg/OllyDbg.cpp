@@ -2,14 +2,22 @@
 #define _CHAR_UNSIGNED //TODO: this is probably harmful for the implementation
 #include "OllyDbg.h"
 #include "x64dbg.h"
+#include <stdarg.h>
 
 //NOTE: SEG_XXX are overloaded. The OllyDbg ones are renamed to ODBG_SEG_XXX
 
 #define dprintf _plugin_logprintf
 #define dputs _plugin_logputs
 
+void dprintf_args(_In_z_ _Printf_format_string_ const char* Format, va_list Args)
+{
+    char buffer[16384];
+    vsnprintf_s(buffer, _TRUNCATE, Format, Args);
+    dprintf("%s", buffer);
+}
+
 #define log(x, ...) dprintf("[" PLUGIN_NAME "] " x, __VA_ARGS__)
-#define fwdlog(function, ...) \
+#define ulog(function, ...) \
     { \
         log("%s(\n", function); /* log the function name */\
         logArgs(__VA_ARGS__); /* log the function arguments */\
@@ -36,29 +44,95 @@ static inline void logArgs(Arg a1, Args... args)
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// INFORMATION FUNCTIONS /////////////////////////////
-extc void cdecl Addtolist(long addr, int highlight, char* format, ...) { }
+extc void cdecl Addtolist(long addr, int highlight, char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(addr, highlight, format);
 
-extc void cdecl Updatelist() { }
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
 
-extc HWND cdecl Createlistwindow() { return 0; }
+    log(") = UNIMPLEMENTED\n");    
+}
 
-extc void cdecl Error(char* format, ...) { }
+extc void cdecl Updatelist() { ulog(__FUNCTION__) }
 
-extc void cdecl Message(ulong addr, char* format, ...) { }
+extc HWND cdecl Createlistwindow() { ulog(__FUNCTION__) return 0; }
 
-extc void cdecl Infoline(char* format, ...) { }
+extc void cdecl Error(char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(format);
 
-extc void cdecl Progress(int promille, char* format, ...) { }
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
 
-extc void cdecl Flash(char* format, ...) { }
+    log(") = UNIMPLEMENTED\n");
+}
+
+extc void cdecl Message(ulong addr, char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(addr, format);
+
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
+
+    log(") = UNIMPLEMENTED\n");
+}
+
+extc void cdecl Infoline(char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(format);
+
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
+
+    log(") = UNIMPLEMENTED\n");
+}
+
+extc void cdecl Progress(int promille, char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(promille, format);
+
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
+
+    log(") = UNIMPLEMENTED\n");
+}
+
+extc void cdecl Flash(char* format, ...)
+{
+    dprintf("%s(\n", __FUNCTION__);
+    logArgs(format);
+
+    va_list args;
+    va_start(args, format);
+    dprintf_args(format, args);
+    va_end(args);
+
+    log(") = UNIMPLEMENTED\n");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA FORMATTING FUNCTIONS ///////////////////////////
-extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment) { return 0; }
+extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment) { ulog(__FUNCTION__, addr, base, addrmode, symb, nsymb, comment) return 0; }
 
-extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb) { return 0; }
+extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb) { ulog(__FUNCTION__, addr, addrmode, symb, nsymb) return 0; }
 
-extc int cdecl Decodecharacter(char* s, uint c) { return 0; }
+extc int cdecl Decodecharacter(char* s, uint c) { ulog(__FUNCTION__, s, c) return 0; }
 
 extc int cdecl Printfloat4(char* s, float f) { return 0; }
 
