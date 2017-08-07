@@ -611,19 +611,15 @@ extc int cdecl Plugingetvalue(int type)
         oputs("UNIMPLEMENTED: VAL_RESTOREWINDOWPOS");
         break;
     case VAL_HPROCESS: // Handle of Debuggee
-        oputs("UNIMPLEMENTED: VAL_HPROCESS");
-        break;
+        return int(DbgGetProcessHandle());
     case VAL_PROCESSID: // Process ID of Debuggee
-        oputs("UNIMPLEMENTED: VAL_PROCESSID");
-        break;
+        return DbgGetProcessId();
     case VAL_HMAINTHREAD: // Handle of main thread
-        oputs("UNIMPLEMENTED: VAL_HMAINTHREAD");
-        break;
+        return int(DbgGetThreadHandle());
     case VAL_MAINTHREADID: // Thread ID of main thread
-        oputs("UNIMPLEMENTED: VAL_MAINTHREADID");
-        break;
+        return DbgGetThreadId();
     case VAL_MAINBASE: // Base of main module in the process
-        oputs("UNIMPLEMENTED: VAL_MAINBASE");
+        return Script::Module::GetMainModuleBase();
         break;
     case VAL_PROCESSNAME: // Name of the active process
         oputs("UNIMPLEMENTED: VAL_PROCESSNAME");
