@@ -88,7 +88,7 @@ extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, p(s), p(f)) re
 
 extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, p(s), p(d)) return 0; }
 
-//TODO: this will break
+//TODO: this will break because sizeof(long double) != 10 with MSVC
 extc int cdecl Printfloat10(char* s, long double ext) { __debugbreak(); return 0; }
 
 extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
@@ -105,381 +105,381 @@ extc int cdecl Stringtotext(char* data, int ndata, char* text, int ntext) { ulog
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// DATA INPUT FUNCTIONS /////////////////////////////
-extc int cdecl Getlong(char* title, ulong* data, int datasize, char letter, int mode) { return 0; }
+extc int cdecl Getlong(char* title, ulong* data, int datasize, char letter, int mode) { ulog(__FUNCTION__, p(title), p(data), p(datasize), p(letter), p(mode)) return 0; }
 
-extc int cdecl Getlongxy(char* title, ulong* data, int datasize, char letter, int mode, int x, int y) { return 0; }
+extc int cdecl Getlongxy(char* title, ulong* data, int datasize, char letter, int mode, int x, int y) { ulog(__FUNCTION__, p(title), p(data), p(datasize), p(letter), p(mode), p(x), p(y)) return 0; }
 
-extc int cdecl Getregxy(char* title, ulong* data, char letter, int x, int y) { return 0; }
+extc int cdecl Getregxy(char* title, ulong* data, char letter, int x, int y) { ulog(__FUNCTION__, p(title), p(data), p(letter), p(x), p(y)) return 0; }
 
-extc int cdecl Getline(char* title, ulong* data) { return 0; }
+extc int cdecl Getline(char* title, ulong* data) { ulog(__FUNCTION__, p(title), p(data)) return 0; }
 
-extc int cdecl Getlinexy(char* title, ulong* data, int x, int y) { return 0; }
+extc int cdecl Getlinexy(char* title, ulong* data, int x, int y) { ulog(__FUNCTION__, p(title), p(data), p(x), p(y)) return 0; }
 
-extc int cdecl Getfloat10(char* title, long double* fdata, uchar* tag, char letter, int mode) { return 0; }
+extc int cdecl Getfloat10(char* title, long double* fdata, uchar* tag, char letter, int mode) { ulog(__FUNCTION__, p(title), p(fdata), p(tag), p(letter), p(mode)) return 0; }
 
-extc int cdecl Getfloat10xy(char* title, long double* fdata, char* tag, char letter, int mode, int x, int y) { return 0; }
+extc int cdecl Getfloat10xy(char* title, long double* fdata, char* tag, char letter, int mode, int x, int y) { ulog(__FUNCTION__, p(title), p(fdata), p(tag), p(letter), p(mode), p(x), p(y)) return 0; }
 
-extc int cdecl Getfloat(char* title, void* fdata, int size, char letter, int mode) { return 0; }
+extc int cdecl Getfloat(char* title, void* fdata, int size, char letter, int mode) { ulog(__FUNCTION__, p(title), p(fdata), p(size), p(letter), p(mode)) return 0; }
 
-extc int cdecl Getfloatxy(char* title, void* fdata, int size, char letter, int mode, int x, int y) { return 0; }
+extc int cdecl Getfloatxy(char* title, void* fdata, int size, char letter, int mode, int x, int y) { ulog(__FUNCTION__, p(title), p(fdata), p(size), p(letter), p(mode), p(x), p(y)) return 0; }
 
-extc void cdecl Getasmfindmodel(t_asmmodel model[NMODELS], char letter, int searchall) { }
+extc void cdecl Getasmfindmodel(t_asmmodel model[NMODELS], char letter, int searchall) { ulog(__FUNCTION__, p(model), p(letter), p(searchall)) }
 
-extc void cdecl Getasmfindmodelxy(t_asmmodel model[NMODELS], char letter, int searchall, int x, int y) { }
+extc void cdecl Getasmfindmodelxy(t_asmmodel model[NMODELS], char letter, int searchall, int x, int y) { ulog(__FUNCTION__, p(model), p(letter), p(searchall), p(x), p(y)) }
 
-extc int cdecl Gettext(char* title, char* text, char letter, int type, int fontindex) { return 0; }
+extc int cdecl Gettext(char* title, char* text, char letter, int type, int fontindex) { ulog(__FUNCTION__, p(title), p(text), p(letter), p(type), p(fontindex)) return 0; }
 
-extc int cdecl Gettextxy(char* title, char* text, char letter, int type, int fontindex, int x, int y) { return 0; }
+extc int cdecl Gettextxy(char* title, char* text, char letter, int type, int fontindex, int x, int y) { ulog(__FUNCTION__, p(title), p(text), p(letter), p(type), p(fontindex), p(x), p(y)) return 0; }
 
-extc int cdecl Gethexstring(char* title, t_hexstr* hs, int mode, int fontindex, char letter) { return 0; }
+extc int cdecl Gethexstring(char* title, t_hexstr* hs, int mode, int fontindex, char letter) { ulog(__FUNCTION__, p(title), p(hs), p(mode), p(fontindex), p(letter)) return 0; }
 
-extc int cdecl Gethexstringxy(char* title, t_hexstr* hs, int mode, int fontindex, char letter, int x, int y) { return 0; }
+extc int cdecl Gethexstringxy(char* title, t_hexstr* hs, int mode, int fontindex, char letter, int x, int y) { ulog(__FUNCTION__, p(title), p(hs), p(mode), p(fontindex), p(letter), p(x), p(y)) return 0; }
 
-extc int cdecl Getmmx(char* title, uchar* data, int mode) { return 0; }
+extc int cdecl Getmmx(char* title, uchar* data, int mode) { ulog(__FUNCTION__, p(title), p(data), p(mode)) return 0; }
 
-extc int cdecl Getmmxxy(char* title, char* data, int mode, int x, int y) { return 0; }
+extc int cdecl Getmmxxy(char* title, char* data, int mode, int x, int y) { ulog(__FUNCTION__, p(title), p(data), p(mode), p(x), p(y)) return 0; }
 
-extc int cdecl Get3dnow(char* title, uchar* data, int mode) { return 0; }
+extc int cdecl Get3dnow(char* title, uchar* data, int mode) { ulog(__FUNCTION__, p(title), p(data), p(mode)) return 0; }
 
-extc int cdecl Get3dnowxy(char* title, char* data, int mode, int x, int y) { return 0; }
+extc int cdecl Get3dnowxy(char* title, char* data, int mode, int x, int y) { ulog(__FUNCTION__, p(title), p(data), p(mode), p(x), p(y)) return 0; }
 
-extc int cdecl Browsefilename(char* title, char* name, char* defext, int getarguments) { return 0; }
+extc int cdecl Browsefilename(char* title, char* name, char* defext, int getarguments) { ulog(__FUNCTION__, p(title), p(name), p(defext), p(getarguments)) return 0; }
 
-extc int cdecl OpenEXEfile(char* path, int dropped) { return 0; }
+extc int cdecl OpenEXEfile(char* path, int dropped) { ulog(__FUNCTION__, p(path), p(dropped)) return 0; }
 
-extc int cdecl Attachtoactiveprocess(int newprocessid) { return 0; }
+extc int cdecl Attachtoactiveprocess(int newprocessid) { ulog(__FUNCTION__, p(newprocessid)) return 0; }
 
-extc void cdecl Animate(int animation) { }
+extc void cdecl Animate(int animation) { ulog(__FUNCTION__, p(animation)) }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// SORTED DATA FUNCTIONS /////////////////////////////
-extc int cdecl Createsorteddata(t_sorted* sd, char* name, int itemsize, int nmax, SORTFUNC* sortfunc, DESTFUNC* destfunc) { return 0; }
+extc int cdecl Createsorteddata(t_sorted* sd, char* name, int itemsize, int nmax, SORTFUNC* sortfunc, DESTFUNC* destfunc) { ulog(__FUNCTION__, p(sd), p(name), p(itemsize), p(nmax), p(sortfunc), p(destfunc)) return 0; }
 
-extc void cdecl Destroysorteddata(t_sorted* sd) { }
+extc void cdecl Destroysorteddata(t_sorted* sd) { ulog(__FUNCTION__, p(sd)) }
 
-extc void* cdecl Addsorteddata(t_sorted* sd, void* item) { return 0; }
+extc void* cdecl Addsorteddata(t_sorted* sd, void* item) { ulog(__FUNCTION__, p(sd), p(item)) return 0; }
 
-extc void cdecl Deletesorteddata(t_sorted* sd, ulong addr) { }
+extc void cdecl Deletesorteddata(t_sorted* sd, ulong addr) { ulog(__FUNCTION__, p(sd), p(addr)) }
 
-extc void cdecl Deletesorteddatarange(t_sorted* sd, ulong addr0, ulong addr1) { }
+extc void cdecl Deletesorteddatarange(t_sorted* sd, ulong addr0, ulong addr1) { ulog(__FUNCTION__, p(sd), p(addr0), p(addr1)) }
 
-extc int cdecl Deletenonconfirmedsorteddata(t_sorted* sd) { return 0; }
+extc int cdecl Deletenonconfirmedsorteddata(t_sorted* sd) { ulog(__FUNCTION__, p(sd)) return 0; }
 
-extc void* cdecl Findsorteddata(t_sorted* sd, ulong addr) { return 0; }
+extc void* cdecl Findsorteddata(t_sorted* sd, ulong addr) { ulog(__FUNCTION__, p(sd), p(addr)) return 0; }
 
-extc void* cdecl Findsorteddatarange(t_sorted* sd, ulong addr0, ulong addr1) { return 0; }
+extc void* cdecl Findsorteddatarange(t_sorted* sd, ulong addr0, ulong addr1) { ulog(__FUNCTION__, p(sd), p(addr0), p(addr1)) return 0; }
 
-extc int cdecl Findsorteddataindex(t_sorted* sd, ulong addr0, ulong addr1) { return 0; }
+extc int cdecl Findsorteddataindex(t_sorted* sd, ulong addr0, ulong addr1) { ulog(__FUNCTION__, p(sd), p(addr0), p(addr1)) return 0; }
 
-extc int cdecl Sortsorteddata(t_sorted* sd, int sort) { return 0; }
+extc int cdecl Sortsorteddata(t_sorted* sd, int sort) { ulog(__FUNCTION__, p(sd), p(sort)) return 0; }
 
-extc void* cdecl Getsortedbyselection(t_sorted* sd, int index) { return 0; }
+extc void* cdecl Getsortedbyselection(t_sorted* sd, int index) { ulog(__FUNCTION__, p(sd), p(index)) return 0; }
 
-extc void cdecl Defaultbar(t_bar* pb) { }
+extc void cdecl Defaultbar(t_bar* pb) { ulog(__FUNCTION__, p(pb)) }
 
-extc int cdecl Tablefunction(t_table* pt, HWND hw, UINT msg, WPARAM wp, LPARAM lp) { return 0; }
+extc int cdecl Tablefunction(t_table* pt, HWND hw, UINT msg, WPARAM wp, LPARAM lp) { ulog(__FUNCTION__, p(pt), p(hw), p(msg), p(wp), p(lp)) return 0; }
 
-extc void cdecl Painttable(HWND hw, t_table* pt, DRAWFUNC getline) { }
+extc void cdecl Painttable(HWND hw, t_table* pt, DRAWFUNC getline) { ulog(__FUNCTION__, p(hw), p(pt), p(getline)) }
 
-extc int cdecl Gettableselectionxy(t_table* pt, int column, int* px, int* py) { return 0; }
+extc int cdecl Gettableselectionxy(t_table* pt, int column, int* px, int* py) { ulog(__FUNCTION__, p(pt), p(column), p(px), p(py)) return 0; }
 
-extc void cdecl Selectandscroll(t_table* pt, int index, int mode) { }
+extc void cdecl Selectandscroll(t_table* pt, int index, int mode) { ulog(__FUNCTION__, p(pt), p(index), p(mode)) }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// NAME FUNCTIONS ////////////////////////////////
-extc int cdecl Insertname(ulong addr, int type, char* name) { return 0; }
+extc int cdecl Insertname(ulong addr, int type, char* name) { ulog(__FUNCTION__, p(addr), p(type), p(name)) return 0; }
 
-extc int cdecl Quickinsertname(ulong addr, int type, char* name) { return 0; }
+extc int cdecl Quickinsertname(ulong addr, int type, char* name) { ulog(__FUNCTION__, p(addr), p(type), p(name)) return 0; }
 
-extc void cdecl Mergequicknames() { }
+extc void cdecl Mergequicknames() { ulog(__FUNCTION__) }
 
-extc void cdecl Discardquicknames() { }
+extc void cdecl Discardquicknames() { ulog(__FUNCTION__) }
 
-extc int cdecl Findname(ulong addr, int type, char* name) { return 0; }
+extc int cdecl Findname(ulong addr, int type, char* name) { ulog(__FUNCTION__, p(addr), p(type), p(name)) return 0; }
 
-extc int cdecl Decodename(ulong addr, int type, char* name) { return 0; }
+extc int cdecl Decodename(ulong addr, int type, char* name) { ulog(__FUNCTION__, p(addr), p(type), p(name)) return 0; }
 
-extc ulong cdecl Findnextname(char* name) { return 0; }
+extc ulong cdecl Findnextname(char* name) { ulog(__FUNCTION__, p(name)) return 0; }
 
-extc int cdecl Findlabel(ulong addr, char* name) { return 0; }
+extc int cdecl Findlabel(ulong addr, char* name) { ulog(__FUNCTION__, p(addr), p(name)) return 0; }
 
-extc void cdecl Deletenamerange(ulong addr0, ulong addr1, int type) { }
+extc void cdecl Deletenamerange(ulong addr0, ulong addr1, int type) { ulog(__FUNCTION__, p(addr0), p(addr1), p(type)) }
 
-extc int cdecl Findlabelbyname(char* name, ulong* addr, ulong addr0, ulong addr1) { return 0; }
+extc int cdecl Findlabelbyname(char* name, ulong* addr, ulong addr0, ulong addr1) { ulog(__FUNCTION__, p(name), p(addr), p(addr0), p(addr1)) return 0; }
 
-extc ulong cdecl Findimportbyname(char* name, ulong addr0, ulong addr1) { return 0; }
+extc ulong cdecl Findimportbyname(char* name, ulong addr0, ulong addr1) { ulog(__FUNCTION__, p(name), p(addr0), p(addr1)) return 0; }
 
-extc int cdecl Demanglename(char* name, int type, char* undecorated) { return 0; }
+extc int cdecl Demanglename(char* name, int type, char* undecorated) { ulog(__FUNCTION__, p(name), p(type), p(undecorated)) return 0; }
 
-extc int cdecl Findsymbolicname(ulong addr, char* fname) { return 0; }
+extc int cdecl Findsymbolicname(ulong addr, char* fname) { ulog(__FUNCTION__, p(addr), p(fname)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// DISASSEMBLY FUNCTIONS /////////////////////////////
-extc ulong cdecl Disasm(uchar* src, ulong srcsize, ulong srcip, uchar* srcdec, t_disasm* disasm, int disasmmode, ulong threadid) { return 0; }
+extc ulong cdecl Disasm(uchar* src, ulong srcsize, ulong srcip, uchar* srcdec, t_disasm* disasm, int disasmmode, ulong threadid) { ulog(__FUNCTION__, p(src), p(srcsize), p(srcip), p(srcdec), p(disasm), p(disasmmode), p(threadid)) return 0; }
 
-extc ulong cdecl Disassembleback(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { return 0; }
+extc ulong cdecl Disassembleback(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
 
-extc ulong cdecl Disassembleforward(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { return 0; }
+extc ulong cdecl Disassembleforward(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
 
-extc int cdecl Issuspicious(char* cmd, ulong size, ulong ip, ulong threadid, t_reg* preg, char* s) { return 0; }
+extc int cdecl Issuspicious(char* cmd, ulong size, ulong ip, ulong threadid, t_reg* preg, char* s) { ulog(__FUNCTION__, p(cmd), p(size), p(ip), p(threadid), p(preg), p(s)) return 0; }
 
-extc int cdecl Isfilling(ulong offset, char* data, ulong size, ulong align) { return 0; }
+extc int cdecl Isfilling(ulong offset, char* data, ulong size, ulong align) { ulog(__FUNCTION__, p(offset), p(data), p(size), p(align)) return 0; }
 
-extc int cdecl Isprefix(int c) { return 0; }
+extc int cdecl Isprefix(int c) { ulog(__FUNCTION__, p(c)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// ASSEMBLY FUNCTIONS //////////////////////////////
-extc int cdecl Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt, int constsize, char* errtext) { return 0; }
+extc int cdecl Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt, int constsize, char* errtext) { ulog(__FUNCTION__, p(cmd), p(ip), p(model), p(attempt), p(constsize), p(errtext)) return 0; }
 
-extc int cdecl Checkcondition(int code, ulong flags) { return 0; }
+extc int cdecl Checkcondition(int code, ulong flags) { ulog(__FUNCTION__, p(code), p(flags)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// EXPRESSIONS //////////////////////////////////
-extc int cdecl Expression(t_result* result, char* expression, int a, int b, uchar* data, ulong database, ulong datasize, ulong threadid) { return 0; }
+extc int cdecl Expression(t_result* result, char* expression, int a, int b, uchar* data, ulong database, ulong datasize, ulong threadid) { ulog(__FUNCTION__, p(result), p(expression), p(a), p(b), p(data), p(database), p(datasize), p(threadid)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// THREAD FUNCTIONS ///////////////////////////////
-extc HWND cdecl Createthreadwindow() { return 0; }
+extc HWND cdecl Createthreadwindow() { ulog(__FUNCTION__) return 0; }
 
-extc t_thread* cdecl Findthread(ulong threadid) { return 0; }
+extc t_thread* cdecl Findthread(ulong threadid) { ulog(__FUNCTION__, p(threadid)) return 0; }
 
-extc int cdecl Decodethreadname(char* s, ulong threadid, int mode) { return 0; }
+extc int cdecl Decodethreadname(char* s, ulong threadid, int mode) { ulog(__FUNCTION__, p(s), p(threadid), p(mode)) return 0; }
 
-extc ulong cdecl Getcputhreadid() { return 0; }
+extc ulong cdecl Getcputhreadid() { ulog(__FUNCTION__) return 0; }
 
-extc ulong cdecl Runsinglethread(ulong threadid) { return 0; }
+extc ulong cdecl Runsinglethread(ulong threadid) { ulog(__FUNCTION__, p(threadid)) return 0; }
 
-extc void cdecl Restoreallthreads() { }
+extc void cdecl Restoreallthreads() { ulog(__FUNCTION__) }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// MEMORY FUNCTIONS ///////////////////////////////
-extc int cdecl Listmemory() { return 0; }
+extc int cdecl Listmemory() { ulog(__FUNCTION__) return 0; }
 
-extc t_memory* cdecl Findmemory(ulong addr) { return 0; }
+extc t_memory* cdecl Findmemory(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc int cdecl Guardmemory(ulong base, ulong size, int guard) { return 0; }
+extc int cdecl Guardmemory(ulong base, ulong size, int guard) { ulog(__FUNCTION__, p(base), p(size), p(guard)) return 0; }
 
-extc void cdecl Havecopyofmemory(uchar* copy, ulong base, ulong size) { }
+extc void cdecl Havecopyofmemory(uchar* copy, ulong base, ulong size) { ulog(__FUNCTION__, p(copy), p(base), p(size)) }
 
-extc ulong cdecl Readmemory(void* buf, ulong addr, ulong size, int mode) { return 0; }
+extc ulong cdecl Readmemory(void* buf, ulong addr, ulong size, int mode) { ulog(__FUNCTION__, p(buf), p(addr), p(size), p(mode)) return 0; }
 
-extc ulong cdecl Writememory(void* buf, ulong addr, ulong size, int mode) { return 0; }
+extc ulong cdecl Writememory(void* buf, ulong addr, ulong size, int mode) { ulog(__FUNCTION__, p(buf), p(addr), p(size), p(mode)) return 0; }
 
-extc ulong cdecl Readcommand(ulong ip, char* cmd) { return 0; }
+extc ulong cdecl Readcommand(ulong ip, char* cmd) { ulog(__FUNCTION__, p(ip), p(cmd)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// MODULE FUNCTIONS ///////////////////////////////
-extc t_module* cdecl Findmodule(ulong addr) { return 0; }
+extc t_module* cdecl Findmodule(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc t_fixup* cdecl Findfixup(t_module* pmod, ulong addr) { return 0; }
+extc t_fixup* cdecl Findfixup(t_module* pmod, ulong addr) { ulog(__FUNCTION__, p(pmod), p(addr)) return 0; }
 
-extc uchar* cdecl Finddecode(ulong addr, ulong* psize) { return 0; }
+extc uchar* cdecl Finddecode(ulong addr, ulong* psize) { ulog(__FUNCTION__, p(addr), p(psize)) return 0; }
 
-extc ulong cdecl Findfileoffset(t_module* pmod, ulong addr) { return 0; }
+extc ulong cdecl Findfileoffset(t_module* pmod, ulong addr) { ulog(__FUNCTION__, p(pmod), p(addr)) return 0; }
 
-extc int cdecl Decoderange(ulong addr, ulong size, char* s) { return 0; }
+extc int cdecl Decoderange(ulong addr, ulong size, char* s) { ulog(__FUNCTION__, p(addr), p(size), p(s)) return 0; }
 
-extc int cdecl Analysecode(t_module* pm) { return 0; }
+extc int cdecl Analysecode(t_module* pm) { ulog(__FUNCTION__, p(pm)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////// DUMP /////////////////////////////////////
-extc int cdecl Registerotclass(char* classname, char* iconname, WNDPROC classproc) { return 0; }
+extc int cdecl Registerotclass(char* classname, char* iconname, WNDPROC classproc) { ulog(__FUNCTION__, p(classname), p(iconname), p(classproc)) return 0; }
 
-extc HWND cdecl Newtablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle) { return 0; }
+extc HWND cdecl Newtablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle) { ulog(__FUNCTION__, p(pt), p(nlines), p(maxcolumns), p(winclass), p(wintitle)) return 0; }
 
-extc HWND cdecl Quicktablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle) { return 0; }
+extc HWND cdecl Quicktablewindow(t_table* pt, int nlines, int maxcolumns, char* winclass, char* wintitle) { ulog(__FUNCTION__, p(pt), p(nlines), p(maxcolumns), p(winclass), p(wintitle)) return 0; }
 
-extc HWND cdecl Createdumpwindow(char* name, ulong base, ulong size, ulong addr, int type, SPECFUNC* specdump) { return 0; }
+extc HWND cdecl Createdumpwindow(char* name, ulong base, ulong size, ulong addr, int type, SPECFUNC* specdump) { ulog(__FUNCTION__, p(name), p(base), p(size), p(addr), p(type), p(specdump)) return 0; }
 
-extc void cdecl Setdumptype(t_dump* pd, int dumptype) { }
+extc void cdecl Setdumptype(t_dump* pd, int dumptype) { ulog(__FUNCTION__, p(pd), p(dumptype)) }
 
-extc void cdecl Dumpbackup(t_dump* pd, int action) { }
+extc void cdecl Dumpbackup(t_dump* pd, int action) { ulog(__FUNCTION__, p(pd), p(action)) }
 
-extc int cdecl Broadcast(UINT msg, WPARAM wp, LPARAM lp) { return 0; }
+extc int cdecl Broadcast(UINT msg, WPARAM wp, LPARAM lp) { ulog(__FUNCTION__, p(msg), p(wp), p(lp)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA CONVERSION FUNCTIONS ///////////////////////////
-extc ulong cdecl Compress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout) { return 0; }
+extc ulong cdecl Compress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout) { ulog(__FUNCTION__, p(bufin), p(nbufin), p(bufout), p(nbufout)) return 0; }
 
-extc ulong cdecl Getoriginaldatasize(char* bufin, ulong nbufin) { return 0; }
+extc ulong cdecl Getoriginaldatasize(char* bufin, ulong nbufin) { ulog(__FUNCTION__, p(bufin), p(nbufin)) return 0; }
 
-extc ulong cdecl Decompress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout) { return 0; }
+extc ulong cdecl Decompress(uchar* bufin, ulong nbufin, uchar* bufout, ulong nbufout) { ulog(__FUNCTION__, p(bufin), p(nbufin), p(bufout), p(nbufout)) return 0; }
 
-extc ulong cdecl Calculatecrc(uchar* copy, ulong base, ulong size, t_module* pmod, ulong fixupoffset) { return 0; }
+extc ulong cdecl Calculatecrc(uchar* copy, ulong base, ulong size, t_module* pmod, ulong fixupoffset) { ulog(__FUNCTION__, p(copy), p(base), p(size), p(pmod), p(fixupoffset)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// REFERENCES AND SEARCH /////////////////////////////
-extc int cdecl Findreferences(ulong base, ulong size, ulong addr0, ulong addr1, ulong origin, int recurseonjump, char* title) { return 0; }
+extc int cdecl Findreferences(ulong base, ulong size, ulong addr0, ulong addr1, ulong origin, int recurseonjump, char* title) { ulog(__FUNCTION__, p(base), p(size), p(addr0), p(addr1), p(origin), p(recurseonjump), p(title)) return 0; }
 
-extc int cdecl Findstrings(ulong base, ulong size, ulong origin, char* title) { return 0; }
+extc int cdecl Findstrings(ulong base, ulong size, ulong origin, char* title) { ulog(__FUNCTION__, p(base), p(size), p(origin), p(title)) return 0; }
 
-extc int cdecl Findalldllcalls(t_dump* pd, ulong origin, char* title) { return 0; }
+extc int cdecl Findalldllcalls(t_dump* pd, ulong origin, char* title) { ulog(__FUNCTION__, p(pd), p(origin), p(title)) return 0; }
 
-extc int cdecl Findallcommands(t_dump* pd, t_asmmodel* model, ulong origin, char* title) { return 0; }
+extc int cdecl Findallcommands(t_dump* pd, t_asmmodel* model, ulong origin, char* title) { ulog(__FUNCTION__, p(pd), p(model), p(origin), p(title)) return 0; }
 
-extc int cdecl Findallsequences(t_dump* pd, t_extmodel model[NSEQ][NMODELS], ulong origin, char* title) { return 0; }
+extc int cdecl Findallsequences(t_dump* pd, t_extmodel model[NSEQ][NMODELS], ulong origin, char* title) { ulog(__FUNCTION__, p(pd), p(model), p(origin), p(title)) return 0; }
 
-extc ulong cdecl Walkreference(int dir) { return 0; }
+extc ulong cdecl Walkreference(int dir) { ulog(__FUNCTION__, p(dir)) return 0; }
 
-extc ulong cdecl Walkreferenceex(int dir, ulong* size) { return 0; }
+extc ulong cdecl Walkreferenceex(int dir, ulong* size) { ulog(__FUNCTION__, p(dir), p(size)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////// BREAKPOINT AND TRACE FUNCTIONS ////////////////////////
-extc int cdecl Setbreakpoint(ulong addr, ulong type, uchar cmd) { return 0; }
+extc int cdecl Setbreakpoint(ulong addr, ulong type, uchar cmd) { ulog(__FUNCTION__, p(addr), p(type), p(cmd)) return 0; }
 
-extc int cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcount) { return 0; }
+extc int cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcount) { ulog(__FUNCTION__, p(addr), p(type), p(cmd), p(passcount)) return 0; }
 
-extc int cdecl Manualbreakpoint(ulong addr, int key, int shiftkey, ulong nametype, int font) { return 0; }
+extc int cdecl Manualbreakpoint(ulong addr, int key, int shiftkey, ulong nametype, int font) { ulog(__FUNCTION__, p(addr), p(key), p(shiftkey), p(nametype), p(font)) return 0; }
 
-extc void cdecl Deletebreakpoints(ulong addr0, ulong addr1, int silent) { }
+extc void cdecl Deletebreakpoints(ulong addr0, ulong addr1, int silent) { ulog(__FUNCTION__, p(addr0), p(addr1), p(silent)) }
 
-extc ulong cdecl Getbreakpointtype(ulong addr) { return 0; }
+extc ulong cdecl Getbreakpointtype(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc ulong cdecl Getbreakpointtypecount(ulong addr, ulong* passcount) { return 0; }
+extc ulong cdecl Getbreakpointtypecount(ulong addr, ulong* passcount) { ulog(__FUNCTION__, p(addr), p(passcount)) return 0; }
 
-extc ulong cdecl Getnextbreakpoint(ulong addr, ulong* type, int* cmd) { return 0; }
+extc ulong cdecl Getnextbreakpoint(ulong addr, ulong* type, int* cmd) { ulog(__FUNCTION__, p(addr), p(type), p(cmd)) return 0; }
 
-extc void cdecl Tempbreakpoint(ulong addr, int mode) { }
+extc void cdecl Tempbreakpoint(ulong addr, int mode) { ulog(__FUNCTION__, p(addr), p(mode)) }
 
-extc int cdecl Hardbreakpoints(int closeondelete) { return 0; }
+extc int cdecl Hardbreakpoints(int closeondelete) { ulog(__FUNCTION__, p(closeondelete)) return 0; }
 
-extc int cdecl Sethardwarebreakpoint(ulong addr, int size, int type) { return 0; }
+extc int cdecl Sethardwarebreakpoint(ulong addr, int size, int type) { ulog(__FUNCTION__, p(addr), p(size), p(type)) return 0; }
 
-extc int cdecl Deletehardwarebreakpoint(int index) { return 0; }
+extc int cdecl Deletehardwarebreakpoint(int index) { ulog(__FUNCTION__, p(index)) return 0; }
 
-extc int cdecl Deletehardwarebreakbyaddr(ulong addr) { return 0; }
+extc int cdecl Deletehardwarebreakbyaddr(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc int cdecl Setmembreakpoint(int type, ulong addr, ulong size) { return 0; }
+extc int cdecl Setmembreakpoint(int type, ulong addr, ulong size) { ulog(__FUNCTION__, p(type), p(addr), p(size)) return 0; }
 
-extc uchar* cdecl Findhittrace(ulong addr, uchar** ptracecopy, ulong* psize) { return 0; }
+extc uchar* cdecl Findhittrace(ulong addr, uchar** ptracecopy, ulong* psize) { ulog(__FUNCTION__, p(addr), p(ptracecopy), p(psize)) return 0; }
 
-extc int cdecl Modifyhittrace(ulong addr0, ulong addr1, int mode) { return 0; }
+extc int cdecl Modifyhittrace(ulong addr0, ulong addr1, int mode) { ulog(__FUNCTION__, p(addr0), p(addr1), p(mode)) return 0; }
 
-extc ulong cdecl Isretaddr(ulong retaddr, ulong* procaddr) { return 0; }
+extc ulong cdecl Isretaddr(ulong retaddr, ulong* procaddr) { ulog(__FUNCTION__, p(retaddr), p(procaddr)) return 0; }
 
-extc HWND cdecl Creatertracewindow() { return 0; }
+extc HWND cdecl Creatertracewindow() { ulog(__FUNCTION__) return 0; }
 
-extc void cdecl Settracecondition(char* cond, int onsuspicious, ulong in0, ulong in1, ulong out0, ulong out1) { }
+extc void cdecl Settracecondition(char* cond, int onsuspicious, ulong in0, ulong in1, ulong out0, ulong out1) { ulog(__FUNCTION__, p(cond), p(onsuspicious), p(in0), p(in1), p(out0), p(out1)) }
 
-extc void cdecl Settracecount(ulong count) { }
+extc void cdecl Settracecount(ulong count) { ulog(__FUNCTION__, p(count)) }
 
-extc void cdecl Settracepauseoncommands(char* cmdset) { }
+extc void cdecl Settracepauseoncommands(char* cmdset) { ulog(__FUNCTION__, p(cmdset)) }
 
-extc int cdecl Startruntrace(t_reg* preg) { return 0; }
+extc int cdecl Startruntrace(t_reg* preg) { ulog(__FUNCTION__, p(preg)) return 0; }
 
-extc void cdecl Deleteruntrace() { }
+extc void cdecl Deleteruntrace() { ulog(__FUNCTION__) }
 
-extc int cdecl Runtracesize() { return 0; }
+extc int cdecl Runtracesize() { ulog(__FUNCTION__) return 0; }
 
-extc int cdecl Findprevruntraceip(ulong ip, int startback) { return 0; }
+extc int cdecl Findprevruntraceip(ulong ip, int startback) { ulog(__FUNCTION__, p(ip), p(startback)) return 0; }
 
-extc int cdecl Findnextruntraceip(ulong ip, int startback) { return 0; }
+extc int cdecl Findnextruntraceip(ulong ip, int startback) { ulog(__FUNCTION__, p(ip), p(startback)) return 0; }
 
-extc int cdecl Getruntraceregisters(int nback, t_reg* preg, t_reg* pold, char* cmd, char* comment) { return 0; }
+extc int cdecl Getruntraceregisters(int nback, t_reg* preg, t_reg* pold, char* cmd, char* comment) { ulog(__FUNCTION__, p(nback), p(preg), p(pold), p(cmd), p(comment)) return 0; }
 
-extc int cdecl Getruntraceprofile(ulong addr, ulong size, ulong* profile) { return 0; }
+extc int cdecl Getruntraceprofile(ulong addr, ulong size, ulong* profile) { ulog(__FUNCTION__, p(addr), p(size), p(profile)) return 0; }
 
-extc void cdecl Scrollruntracewindow(int back) { }
+extc void cdecl Scrollruntracewindow(int back) { ulog(__FUNCTION__, p(back)) }
 
-extc HWND cdecl Createprofilewindow(ulong base, ulong size) { return 0; }
+extc HWND cdecl Createprofilewindow(ulong base, ulong size) { ulog(__FUNCTION__, p(base), p(size)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// CODE INJECTION ////////////////////////////////
-extc int cdecl Injectcode(ulong threadid, t_inject* inject, char* data, ulong datasize, ulong parm1, ulong parm2, INJECTANSWER* answerfunc) { return 0; }
+extc int cdecl Injectcode(ulong threadid, t_inject* inject, char* data, ulong datasize, ulong parm1, ulong parm2, INJECTANSWER* answerfunc) { ulog(__FUNCTION__, p(threadid), p(inject), p(data), p(datasize), p(parm1), p(parm2), p(answerfunc)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// CPU-SPECIFIC FUNCTIONS ////////////////////////////
-extc void cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode) { }
+extc void cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode) { ulog(__FUNCTION__, p(threadid), p(asmaddr), p(dumpaddr), p(stackaddr), p(mode)) }
 
-extc void cdecl Setdisasm(ulong asmaddr, ulong selsize, int mode) { }
+extc void cdecl Setdisasm(ulong asmaddr, ulong selsize, int mode) { ulog(__FUNCTION__, p(asmaddr), p(selsize), p(mode)) }
 
-extc void cdecl Redrawdisassembler() { }
+extc void cdecl Redrawdisassembler() { ulog(__FUNCTION__) }
 
-extc void cdecl Getdisassemblerrange(ulong* pbase, ulong* psize) { }
+extc void cdecl Getdisassemblerrange(ulong* pbase, ulong* psize) { ulog(__FUNCTION__, p(pbase), p(psize)) }
 
-extc ulong cdecl Findprocbegin(ulong addr) { return 0; }
+extc ulong cdecl Findprocbegin(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc ulong cdecl Findprocend(ulong addr) { return 0; }
+extc ulong cdecl Findprocend(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc ulong cdecl Findprevproc(ulong addr) { return 0; }
+extc ulong cdecl Findprevproc(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc ulong cdecl Findnextproc(ulong addr) { return 0; }
+extc ulong cdecl Findnextproc(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc int cdecl Getproclimits(ulong addr, ulong* start, ulong* end) { return 0; }
+extc int cdecl Getproclimits(ulong addr, ulong* start, ulong* end) { ulog(__FUNCTION__, p(addr), p(start), p(end)) return 0; }
 
-extc void cdecl Sendshortcut(int where, ulong addr, int msg, int ctrl, int shift, int vkcode) { }
+extc void cdecl Sendshortcut(int where, ulong addr, int msg, int ctrl, int shift, int vkcode) { ulog(__FUNCTION__, p(where), p(addr), p(msg), p(ctrl), p(shift), p(vkcode)) }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// PROCESS CONTROL ////////////////////////////////
-extc t_status cdecl Getstatus() { return STAT_NONE; }
+extc t_status cdecl Getstatus() { ulog(__FUNCTION__) return STAT_NONE; }
 
-extc int cdecl Go(ulong threadid, ulong tilladdr, int stepmode, int givechance, int backupregs) { return 0; }
+extc int cdecl Go(ulong threadid, ulong tilladdr, int stepmode, int givechance, int backupregs) { ulog(__FUNCTION__, p(threadid), p(tilladdr), p(stepmode), p(givechance), p(backupregs)) return 0; }
 
-extc int cdecl Suspendprocess(int processevents) { return 0; }
+extc int cdecl Suspendprocess(int processevents) { ulog(__FUNCTION__, p(processevents)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// DECODING OF ARGUMENTS /////////////////////////////
-extc uchar* cdecl Findknownfunction(ulong addr, int direct, int level, char* fname) { return 0; }
+extc uchar* cdecl Findknownfunction(ulong addr, int direct, int level, char* fname) { ulog(__FUNCTION__, p(addr), p(direct), p(level), p(fname)) return 0; }
 
-extc int cdecl Decodeknownargument(ulong addr, uchar* arg, ulong value, int valid, char* s, char* mask, uchar* pset[]) { return 0; }
+extc int cdecl Decodeknownargument(ulong addr, uchar* arg, ulong value, int valid, char* s, char* mask, uchar* pset[]) { ulog(__FUNCTION__, p(addr), p(arg), p(value), p(valid), p(s), p(mask), p(pset)) return 0; }
 
-extc char cdecl* Findunknownfunction(ulong ip, char* code, char* dec, ulong size, char* fname) { return 0; }
+extc char cdecl* Findunknownfunction(ulong ip, char* code, char* dec, ulong size, char* fname) { ulog(__FUNCTION__, p(ip), p(code), p(dec), p(size), p(fname)) return 0; }
 
-extc int cdecl Decodeascii(ulong value, char* s, int len, int mode) { return 0; }
+extc int cdecl Decodeascii(ulong value, char* s, int len, int mode) { ulog(__FUNCTION__, p(value), p(s), p(len), p(mode)) return 0; }
 
-extc int cdecl Decodeunicode(ulong value, char* s, int len) { return 0; }
+extc int cdecl Decodeunicode(ulong value, char* s, int len) { ulog(__FUNCTION__, p(value), p(s), p(len)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// SOURCE CODE SUPPORT //////////////////////////////
-extc HWND cdecl Showsourcefromaddress(ulong addr, int show) { return 0; }
+extc HWND cdecl Showsourcefromaddress(ulong addr, int show) { ulog(__FUNCTION__, p(addr), p(show)) return 0; }
 
-extc int cdecl Getresourcestring(t_module* pm, ulong id, char* s) { return 0; }
+extc int cdecl Getresourcestring(t_module* pm, ulong id, char* s) { ulog(__FUNCTION__, p(pm), p(id), p(s)) return 0; }
 
-extc t_sourceline* cdecl Getlinefromaddress(ulong addr) { return 0; }
+extc t_sourceline* cdecl Getlinefromaddress(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc ulong cdecl Getaddressfromline(ulong addr0, ulong addr1, char* path, ulong line) { return 0; }
+extc ulong cdecl Getaddressfromline(ulong addr0, ulong addr1, char* path, ulong line) { ulog(__FUNCTION__, p(addr0), p(addr1), p(path), p(line)) return 0; }
 
-extc int cdecl Getsourcefilelimits(ulong nameaddr, ulong* addr0, ulong* addr1) { return 0; }
+extc int cdecl Getsourcefilelimits(ulong nameaddr, ulong* addr0, ulong* addr1) { ulog(__FUNCTION__, p(nameaddr), p(addr0), p(addr1)) return 0; }
 
-extc int cdecl Decodefullvarname(t_module* pmod, t_symvar* psym, int offset, char* name) { return 0; }
+extc int cdecl Decodefullvarname(t_module* pmod, t_symvar* psym, int offset, char* name) { ulog(__FUNCTION__, p(pmod), p(psym), p(offset), p(name)) return 0; }
 
-extc int cdecl Getbprelname(t_module* pmod, ulong addr, long offset, char* s, int nsymb) { return 0; }
+extc int cdecl Getbprelname(t_module* pmod, ulong addr, long offset, char* s, int nsymb) { ulog(__FUNCTION__, p(pmod), p(addr), p(offset), p(s), p(nsymb)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// WATCH SUPPORT /////////////////////////////////
-extc HWND cdecl Createwatchwindow() { return 0; }
+extc HWND cdecl Createwatchwindow() { ulog(__FUNCTION__) return 0; }
 
-extc int cdecl Deletewatch(int indexone) { return 0; }
+extc int cdecl Deletewatch(int indexone) { ulog(__FUNCTION__, p(indexone)) return 0; }
 
-extc int cdecl Insertwatch(int indexone, char* text) { return 0; }
+extc int cdecl Insertwatch(int indexone, char* text) { ulog(__FUNCTION__, p(indexone), p(text)) return 0; }
 
-extc int cdecl Getwatch(int indexone, char* text) { return 0; }
+extc int cdecl Getwatch(int indexone, char* text) { ulog(__FUNCTION__, p(indexone), p(text)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// WINDOWS-SPECIFIC FUNCTIONS //////////////////////////
-extc HWND cdecl Createwinwindow() { return 0; }
+extc HWND cdecl Createwinwindow() { ulog(__FUNCTION__) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// PATCHES ////////////////////////////////////
-extc HWND cdecl Createpatchwindow() { return 0; }
+extc HWND cdecl Createpatchwindow() { ulog(__FUNCTION__) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// PLUGIN-SPECIFIC FUNCTIONS ///////////////////////////
-extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc) { return 0; }
+extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc) { ulog(__FUNCTION__, p(classname), p(iconname), p(dllinst), p(classproc)) return 0; }
 
-extc void cdecl Unregisterpluginclass(char* classname) { }
+extc void cdecl Unregisterpluginclass(char* classname) { ulog(__FUNCTION__, p(classname)) }
 
-extc int cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value) { return 0; }
+extc int cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value) { ulog(__FUNCTION__, p(dllinst), p(key), p(value)) return 0; }
 
-extc int cdecl Pluginwritestringtoini(HINSTANCE dllinst, char* key, char* s) { return 0; }
+extc int cdecl Pluginwritestringtoini(HINSTANCE dllinst, char* key, char* s) { ulog(__FUNCTION__, p(dllinst), p(key), p(s)) return 0; }
 
-extc int cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def) { return 0; }
+extc int cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def) { ulog(__FUNCTION__, p(dllinst), p(key), p(def)) return 0; }
 
-extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def) { return 0; }
+extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def) { ulog(__FUNCTION__, p(dllinst), p(key), p(s), p(def)) return 0; }
 
-extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data) { return 0; }
+extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data) { ulog(__FUNCTION__, p(tag), p(size), p(data)) return 0; }
 
-extc int cdecl Plugingetvalue(int type) { return 0; }
+extc int cdecl Plugingetvalue(int type) { ulog(__FUNCTION__, p(type)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// UNDOCUMENTED FUNCTIONS /////////////////////////////
