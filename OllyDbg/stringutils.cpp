@@ -2,29 +2,6 @@
 #include <windows.h>
 #include <cstdint>
 
-static inline bool convertLongLongNumber(const char* str, unsigned long long & result, int radix)
-{
-    errno = 0;
-    char* end;
-    result = strtoull(str, &end, radix);
-    if(!result && end == str)
-        return false;
-    if(result == ULLONG_MAX && errno)
-        return false;
-    if(*end)
-        return false;
-    return true;
-}
-
-static inline bool convertNumber(const char* str, size_t & result, int radix)
-{
-    unsigned long long llr;
-    if(!convertLongLongNumber(str, llr, radix))
-        return false;
-    result = size_t(llr);
-    return true;
-}
-
 void StringUtils::Split(const String & s, char delim, std::vector<String> & elems)
 {
     elems.clear();

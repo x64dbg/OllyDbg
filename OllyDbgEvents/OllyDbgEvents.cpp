@@ -9,6 +9,7 @@ EXPORT int _ODBG_Plugindata(char* shortname)
 {
     AllocConsole();
     oprintf("%s()\n", __FUNCTION__);
+
     strcpy_s(shortname, 32, "OllyDbgEvents");
     return 110;
 }
@@ -47,7 +48,9 @@ EXPORT int _ODBG_Pluginuddrecord(/*t_module*/ void* pmod, int ismainmodule, ulon
 EXPORT int _ODBG_Pluginmenu(int origin, char data[4096], void* item)
 {
     oprintf("%s(%d, %p, %p)\n", __FUNCTION__, origin, data, item);
-    return 0;
+
+    strcpy_s(data, 4096, "#A{0Aaa,B{1Bbb|2Ccc}}");
+    return 1;
 }
 
 EXPORT void _ODBG_Pluginaction(int origin, int action, void* item)
