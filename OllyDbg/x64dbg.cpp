@@ -15,7 +15,7 @@ int hMenuStack;
 static HINSTANCE hInstMain;
 static int hEntryPool = 100;
 struct OllyPlugin;
-static std::unordered_map<int, std::pair<OllyPlugin*, int>> menuActionMap; //x64dbg hMenuEntry -> OllyDbg plugin + action
+static std::unordered_map<int, std::tuple<OllyPlugin*, int, int>> menuActionMap; //x64dbg hMenuEntry -> plugin + action + origin
 
 static void eventReg(CBTYPE cbType)
 {
@@ -84,6 +84,8 @@ static void eventReg(CBTYPE cbType)
             return "CBVALFROMSTRING";
         case CB_VALTOSTRING:
             return "CBVALTOSTRING";
+        case CB_MENUPREPARE:
+            return "CBMENUPREPARE";
         default:
             __debugbreak();
             return "";
@@ -99,9 +101,7 @@ static void eventReg(CBTYPE cbType)
 
 struct OllyPlugin
 {
-    HINSTANCE hInst;
-    char shortname[32];
-
+    HINSTANCE hInst = 0;
     p_ODBG_Plugindata ODBG_Plugindata = 0; //mandatory
     p_ODBG_Plugininit ODBG_Plugininit = 0; //mandatory
     p_ODBG_Pluginmainloop ODBG_Pluginmainloop = 0;
@@ -117,6 +117,19 @@ struct OllyPlugin
     p_ODBG_Pausedex ODBG_Pausedex = 0;
     p_ODBG_Plugincmd ODBG_Plugincmd = 0;
 
+    char shortname[32];
+
+    struct Menu
+    {
+        int hMenu;
+        int origin;
+        std::string data;
+    };
+
+    Menu menuDisasm;
+    Menu menuDump;
+    Menu menuStack;
+
     bool Load(const wchar_t* szFileName)
     {
         hInst = LoadLibraryW(szFileName);
@@ -129,7 +142,8 @@ struct OllyPlugin
             eventReg(CB_DEBUGEVENT);
         ODBG_Pluginsaveudd = p_ODBG_Pluginsaveudd(GetProcAddress(hInst, "_ODBG_Pluginsaveudd"));
         ODBG_Pluginuddrecord = p_ODBG_Pluginuddrecord(GetProcAddress(hInst, "_ODBG_Pluginuddrecord"));
-        ODBG_Pluginmenu = p_ODBG_Pluginmenu(GetProcAddress(hInst, "_ODBG_Pluginmenu"));
+        if(ODBG_Pluginmenu = p_ODBG_Pluginmenu(GetProcAddress(hInst, "_ODBG_Pluginmenu")))
+            eventReg(CB_MENUPREPARE);
         if(ODBG_Pluginaction = p_ODBG_Pluginaction(GetProcAddress(hInst, "_ODBG_Pluginaction")))
             eventReg(CB_MENUENTRY);
         ODBG_Pluginshortcut = p_ODBG_Pluginshortcut(GetProcAddress(hInst, "_ODBG_Pluginshortcut"));
@@ -166,10 +180,25 @@ struct OllyPlugin
         return true;
     }
 
-    //ParseMenu => "Map Loader{0Load labels, 1Load comments}, 2Resource analyse, 3Process analyse, 4IDA signature loader, 5Notepad, | 15About.."
-    void ParseMenu(std::string data, int hMenuRoot)
+    Menu* GetMenuOrigin(int hMenu)
     {
-        oprintf("ParseMenu => \"%s\"\n", data.c_str());
+        switch(hMenu)
+        {
+        case GUI_DISASM_MENU:
+            return &menuDisasm;
+        case GUI_DUMP_MENU:
+            return &menuDump;
+        case GUI_STACK_MENU:
+            return &menuStack;
+        default:
+            __debugbreak();
+            return nullptr;
+        }
+    }
+
+    void ParseMenu(const std::string & data, int hMenuRoot, int origin)
+    {
+        oprintf("ParseMenu (%s) => \"%s\"\n", shortname, data.c_str());
 
         std::string id;
         std::string name;
@@ -190,27 +219,65 @@ struct OllyPlugin
             Name
         } state = None;
 
+        auto addSubmenu = [&]()
+        {
+            id = StringUtils::Trim(id);
+            name = StringUtils::Trim(name);
+
+            if(id.empty() && name.empty())
+                __debugbreak();
+            id.append(name);
+
+            auto hSubMenu = _plugin_menuadd(hMenu(), id.c_str());
+            oprintf("added menu to %d: \"%s\" => %d\n", hMenu(), id.c_str(), hSubMenu);
+
+            menuStack.push_back(hSubMenu);
+
+            id.clear();
+            name.clear();
+            state = None;
+        };
+
+        auto addEntry = [&](char ch)
+        {
+            id = StringUtils::Trim(id);
+            name = StringUtils::Trim(name);
+
+            if(id.empty() || name.empty())
+                __debugbreak();
+
+            size_t idNum;
+            if(!convertNumber(id.c_str(), idNum, 10))
+                __debugbreak();
+            if(idNum > 63)
+                __debugbreak();
+
+            auto hEntry = hEntryPool++;
+
+            menuActionMap[hEntry] = std::make_tuple(this, int(idNum), origin);
+
+            if(!_plugin_menuaddentry(hMenu(), hEntry, name.c_str()))
+                __debugbreak();
+            oprintf("added entry to %d: %d => %d, \"%s\"\n", hMenu(), hEntry, idNum, name.c_str());
+
+            if(ch == '|')
+            {
+                if(!_plugin_menuaddseparator(hMenu()))
+                    __debugbreak();
+                else
+                    oprintf("added separator (Name) to %d\n", ch, hMenu());
+            }
+            else if(ch == '}')
+                menuStack.pop_back();
+
+            id.clear();
+            name.clear();
+            state = None;
+        };
+
         for(size_t i = 0; i < data.length(); i++)
         {
             auto ch = data[i];
-            auto addSubmenu = [&]()
-            {
-                id = StringUtils::Trim(id);
-                name = StringUtils::Trim(name);
-
-                if(id.empty() && name.empty())
-                    __debugbreak();
-                id.append(name);
-
-                auto hSubMenu = _plugin_menuadd(hMenu(), id.c_str());
-                oprintf("added menu to %d: \"%s\" => %d\n", hMenu(), id.c_str(), hSubMenu);
-
-                menuStack.push_back(hSubMenu);
-
-                id.clear();
-                name.clear();
-                state = None;
-            };
             switch(state)
             {
             case None:
@@ -247,42 +314,8 @@ struct OllyPlugin
                 }
                 break;
             case Name:
-                if(ch == ',' || ch == '|' || ch == '}' || i + 1 == data.length())
-                {
-                    id = StringUtils::Trim(id);
-                    name = StringUtils::Trim(name);
-
-                    if(id.empty() || name.empty())
-                        __debugbreak();
-
-                    size_t idNum;
-                    if(!convertNumber(id.c_str(), idNum, 10))
-                        __debugbreak();
-                    if(idNum > 63)
-                        __debugbreak();
-
-                    auto hEntry = hEntryPool++;
-
-                    menuActionMap[hEntry] = { this, int(idNum) };
-
-                    if(!_plugin_menuaddentry(hMenu(), hEntry, name.c_str()))
-                        __debugbreak();
-                    oprintf("added entry to %d: %d => %d, \"%s\"\n", hMenu(), hEntry, idNum, name.c_str());
-
-                    if(ch == '|')
-                    {
-                        if(!_plugin_menuaddseparator(hMenu()))
-                            __debugbreak();
-                        else
-                            oprintf("added separator (Name) to %d\n", ch, hMenu());
-                    }
-                    else if(ch == '}')
-                        menuStack.pop_back();
-
-                    id.clear();
-                    name.clear();
-                    state = None;
-                }
+                if(ch == ',' || ch == '|' || ch == '}')
+                    addEntry(ch);
                 else if(ch == '{')
                     addSubmenu();
                 else
@@ -292,6 +325,8 @@ struct OllyPlugin
                 __debugbreak();
             }
         }
+        if(!id.empty() || !name.empty())
+            addEntry('\0');
 
         oputs("ParseMenu finished!");
     }
@@ -381,13 +416,22 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     {
         *data = '\0';
         if(plugin.ODBG_Pluginmenu)
-            if(plugin.ODBG_Pluginmenu(PM_MAIN, data, 0) == 1) //TODO: implement others than PM_MAIN
-                plugin.ParseMenu(data, _plugin_menuadd(hMenu, plugin.shortname));
+        {
+            plugin.menuDisasm.hMenu = _plugin_menuadd(hMenuDisasm, plugin.shortname);
+            plugin.menuDisasm.origin = PM_DISASM;
+            plugin.menuDump.hMenu = _plugin_menuadd(hMenuDump, plugin.shortname);
+            plugin.menuDump.origin = PM_CPUDUMP;
+            plugin.menuStack.hMenu = _plugin_menuadd(hMenuStack, plugin.shortname);
+            plugin.menuStack.origin = PM_CPUSTACK;
+
+            if(plugin.ODBG_Pluginmenu(PM_MAIN, data, 0) == 1)
+                plugin.ParseMenu(data, _plugin_menuadd(hMenu, plugin.shortname), PM_MAIN);
             else
             {
-                menuActionMap[hEntryPool] = { &plugin, 0 };
+                menuActionMap[hEntryPool] = std::make_tuple(&plugin, 0, PM_MAIN);
                 _plugin_menuaddentry(hMenu, hEntryPool++, plugin.shortname);
             }
+        }
     }
 }
 
@@ -398,9 +442,9 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* info)
     auto found = menuActionMap.find(info->hEntry);
     if(found == menuActionMap.end())
         __debugbreak();
-    auto & plugin = *found->second.first;
+    auto & plugin = *std::get<0>(found->second);
     if(plugin.ODBG_Pluginaction)
-        plugin.ODBG_Pluginaction(PM_MAIN, found->second.second, 0);
+        plugin.ODBG_Pluginaction(std::get<2>(found->second), std::get<1>(found->second), 0);
 }
 
 PLUG_EXPORT void CBDEBUGEVENT(CBTYPE, PLUG_CB_DEBUGEVENT* info)
@@ -415,6 +459,31 @@ PLUG_EXPORT void CBINITDEBUG(CBTYPE, PLUG_CB_INITDEBUG* info)
     for(auto & plugin : ollyPlugins)
         if(plugin.ODBG_Pluginreset)
             plugin.ODBG_Pluginreset();
+}
+
+PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
+{
+    char data[4096];
+    for(auto & plugin : ollyPlugins)
+    {
+        *data = '\0';
+        if(plugin.ODBG_Pluginmenu)
+        {
+            auto & menu = *plugin.GetMenuOrigin(info->hMenu);
+            if(plugin.ODBG_Pluginmenu(menu.origin, data, 0)) //TODO: item
+            {
+                if(menu.data != data)
+                {
+                    menu.data = data;
+                    if(!_plugin_menuclear(menu.hMenu))
+                        __debugbreak();
+                    plugin.ParseMenu(menu.data, menu.hMenu, menu.origin);
+                }
+                else
+                    oprintf("using cached %d menu for \"%s\"\n", info->hMenu, plugin.shortname);
+            }
+        }
+    }
 }
 
 BOOL WINAPI DllMain(
