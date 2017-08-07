@@ -7,19 +7,29 @@
 
 //NOTE: SEG_XXX are overloaded. The OllyDbg ones are renamed to ODBG_SEG_XXX
 
+#define var_ulog(function, ...) \
+    { \
+        oprintf("%s(\n", function); \
+        logArgs(__VA_ARGS__); \
+        oprintf("  format: \"%s\"", format); \
+        if(strchr(format, '%')) \
+        { \
+            oprintf(" => \""); \
+            oprintf_args(format, args); \
+            oprintf("\""); \
+        } \
+        oprintf("\n"); \
+        oprintf(") = UNIMPLEMENTED\n"); \
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// INFORMATION FUNCTIONS /////////////////////////////
 extc void cdecl Addtolist(long addr, int highlight, char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(addr, highlight, format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__, p(addr), p(highlight));
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");    
 }
 
 extc void cdecl Updatelist() { ulog(__FUNCTION__) }
@@ -28,95 +38,70 @@ extc HWND cdecl Createlistwindow() { ulog(__FUNCTION__) return 0; }
 
 extc void cdecl Error(char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__);
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");
 }
 
 extc void cdecl Message(ulong addr, char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(addr, format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__, p(addr));
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");
 }
 
 extc void cdecl Infoline(char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__);
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");
 }
 
 extc void cdecl Progress(int promille, char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(promille, format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__, p(promille));
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");
 }
 
 extc void cdecl Flash(char* format, ...)
 {
-    dprintf("%s(\n", __FUNCTION__);
-    logArgs(format);
-
     va_list args;
     va_start(args, format);
-    dprintf_args(format, args);
+    var_ulog(__FUNCTION__);
     va_end(args);
-
-    log(") = UNIMPLEMENTED\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA FORMATTING FUNCTIONS ///////////////////////////
-extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment) { ulog(__FUNCTION__, addr, base, addrmode, symb, nsymb, comment) return 0; }
+extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment) { ulog(__FUNCTION__, p(addr), p(base), p(addrmode), p(symb), p(nsymb), p(comment)) return 0; }
 
-extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb) { ulog(__FUNCTION__, addr, addrmode, symb, nsymb) return 0; }
+extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb) { ulog(__FUNCTION__, p(addr), p(addrmode), p(symb), p(nsymb)) return 0; }
 
-extc int cdecl Decodecharacter(char* s, uint c) { ulog(__FUNCTION__, s, c) return 0; }
+extc int cdecl Decodecharacter(char* s, uint c) { ulog(__FUNCTION__, p(s), p(c)) return 0; }
 
-extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, s, f) return 0; }
+extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
-extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, s, d) return 0; }
+extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, p(s), p(d)) return 0; }
 
 //TODO: this will break
 extc int cdecl Printfloat10(char* s, long double ext) { __debugbreak(); return 0; }
 
-extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, s, f) return 0; }
+extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
-extc int cdecl Printsse(char* s, char* f) { ulog(__FUNCTION__, s, f) return 0; }
+extc int cdecl Printsse(char* s, char* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
-extc ulong cdecl Followcall(ulong addr) { ulog(__FUNCTION__, addr) return 0; }
+extc ulong cdecl Followcall(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
 
-extc int cdecl IstextA(char c) { ulog(__FUNCTION__, c) return 0; }
+extc int cdecl IstextA(char c) { ulog(__FUNCTION__, p(c)) return 0; }
 
-extc int cdecl IstextW(wchar_t w) { ulog(__FUNCTION__, w) return 0; }
+extc int cdecl IstextW(wchar_t w) { ulog(__FUNCTION__, p(w)) return 0; }
 
-extc int cdecl Stringtotext(char* data, int ndata, char* text, int ntext) { ulog(__FUNCTION__, data, ndata, text, ntext) return 0; }
+extc int cdecl Stringtotext(char* data, int ndata, char* text, int ntext) { ulog(__FUNCTION__, p(data), p(ndata), p(text), p(ntext)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// DATA INPUT FUNCTIONS /////////////////////////////

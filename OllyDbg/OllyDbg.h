@@ -65,24 +65,6 @@ typedef struct t_aligntest
 #error Please set default char type to unsigned (option /J)
 #endif
 
-// Borland adds underscore to export automatically, whereas I don't know any
-// such option for Microsoft compiler. This solution is not too elegant but
-// works.
-#define ODBG_Plugindata      _ODBG_Plugindata
-#define ODBG_Plugininit      _ODBG_Plugininit
-#define ODBG_Pluginmainloop  _ODBG_Pluginmainloop
-#define ODBG_Pluginsaveudd   _ODBG_Pluginsaveudd
-#define ODBG_Pluginuddrecord _ODBG_Pluginuddrecord
-#define ODBG_Pluginmenu      _ODBG_Pluginmenu
-#define ODBG_Pluginaction    _ODBG_Pluginaction
-#define ODBG_Pluginshortcut  _ODBG_Pluginshortcut
-#define ODBG_Pluginreset     _ODBG_Pluginreset
-#define ODBG_Pluginclose     _ODBG_Pluginclose
-#define ODBG_Plugindestroy   _ODBG_Plugindestroy
-#define ODBG_Paused          _ODBG_Paused
-#define ODBG_Pausedex        _ODBG_Pausedex
-#define ODBG_Plugincmd       _ODBG_Plugincmd
-
 #endif
 
 
@@ -166,8 +148,8 @@ typedef unsigned long  ulong;          // Unsigned long
 //////////////////////////// INFORMATION FUNCTIONS /////////////////////////////
 
 extc void    cdecl Addtolist(long addr, int highlight, char* format, ...);
-extc void    cdecl Updatelist(void);
-extc HWND    cdecl Createlistwindow(void);
+extc void    cdecl Updatelist();
+extc HWND    cdecl Createlistwindow();
 extc void    cdecl Error(char* format, ...);
 extc void    cdecl Message(ulong addr, char* format, ...);
 extc void    cdecl Infoline(char* format, ...);
@@ -578,8 +560,8 @@ extc void    cdecl Selectandscroll(t_table* pt, int index, int mode);
 
 extc int     cdecl Insertname(ulong addr, int type, char* name);
 extc int     cdecl Quickinsertname(ulong addr, int type, char* name);
-extc void    cdecl Mergequicknames(void);
-extc void    cdecl Discardquicknames(void);
+extc void    cdecl Mergequicknames();
+extc void    cdecl Discardquicknames();
 extc int     cdecl Findname(ulong addr, int type, char* name);
 extc int     cdecl Decodename(ulong addr, int type, char* name);
 extc ulong   cdecl Findnextname(char* name);
@@ -865,12 +847,12 @@ typedef struct t_thread                // Information about active threads
     ulong          reserved[16];         // Reserved for future compatibility
 } t_thread;
 
-extc HWND    cdecl Createthreadwindow(void);
+extc HWND    cdecl Createthreadwindow();
 extc t_thread* cdecl Findthread(ulong threadid);
 extc int     cdecl Decodethreadname(char* s, ulong threadid, int mode);
-extc ulong   cdecl Getcputhreadid(void);
+extc ulong   cdecl Getcputhreadid();
 extc ulong   cdecl Runsinglethread(ulong threadid);
-extc void    cdecl Restoreallthreads(void);
+extc void    cdecl Restoreallthreads();
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -905,7 +887,7 @@ typedef struct t_heap                  // Heap block descriptor
     ulong          parent;               // Handle of heap descriptor block
 } t_heap;
 
-extc int     cdecl Listmemory(void);
+extc int     cdecl Listmemory();
 extc t_memory* cdecl Findmemory(ulong addr);
 extc int     cdecl Guardmemory(ulong base, ulong size, int guard);
 extc void    cdecl Havecopyofmemory(uchar* copy, ulong base, ulong size);
@@ -1254,13 +1236,13 @@ extc int     cdecl Setmembreakpoint(int type, ulong addr, ulong size);
 extc uchar*  cdecl Findhittrace(ulong addr, uchar** ptracecopy, ulong* psize);
 extc int     cdecl Modifyhittrace(ulong addr0, ulong addr1, int mode);
 extc ulong   cdecl Isretaddr(ulong retaddr, ulong* procaddr);
-extc HWND    cdecl Creatertracewindow(void);
+extc HWND    cdecl Creatertracewindow();
 extc void    cdecl Settracecondition(char* cond, int onsuspicious, ulong in0, ulong in1, ulong out0, ulong out1);
 extc void    cdecl Settracecount(ulong count);
 extc void    cdecl Settracepauseoncommands(char* cmdset);
 extc int     cdecl Startruntrace(t_reg* preg);
-extc void    cdecl Deleteruntrace(void);
-extc int     cdecl Runtracesize(void);
+extc void    cdecl Deleteruntrace();
+extc int     cdecl Runtracesize();
 extc int     cdecl Findprevruntraceip(ulong ip, int startback);
 extc int     cdecl Findnextruntraceip(ulong ip, int startback);
 extc int     cdecl Getruntraceregisters(int nback, t_reg* preg, t_reg* pold, char* cmd, char* comment);
@@ -1304,7 +1286,7 @@ extc int     cdecl Injectcode(ulong threadid, t_inject* inject, char* data, ulon
 
 extc void    cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode);
 extc void    cdecl Setdisasm(ulong asmaddr, ulong selsize, int mode);
-extc void    cdecl Redrawdisassembler(void);
+extc void    cdecl Redrawdisassembler();
 extc void    cdecl Getdisassemblerrange(ulong* pbase, ulong* psize);
 extc ulong   cdecl Findprocbegin(ulong addr);
 extc ulong   cdecl Findprocend(ulong addr);
@@ -1333,7 +1315,7 @@ typedef enum t_status                  // Thread/process status
     STAT_CLOSING                         // Process is requested to terminate
 } t_status;
 
-extc t_status cdecl Getstatus(void);
+extc t_status cdecl Getstatus();
 extc int     cdecl Go(ulong threadid, ulong tilladdr, int stepmode, int givechance, int backupregs);
 extc int     cdecl Suspendprocess(int processevents);
 
@@ -1375,7 +1357,7 @@ extc int     cdecl Getbprelname(t_module* pmod, ulong addr, long offset, char* s
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// WATCH SUPPORT /////////////////////////////////
 
-extc HWND    cdecl Createwatchwindow(void);
+extc HWND    cdecl Createwatchwindow();
 extc int     cdecl Deletewatch(int indexone);
 extc int     cdecl Insertwatch(int indexone, char* text);
 extc int     cdecl Getwatch(int indexone, char* text);
@@ -1406,7 +1388,7 @@ typedef struct t_window                // Description of window
     char           tree[MAXNEST];        // Tree display
 } t_window;
 
-extc HWND    cdecl Createwinwindow(void);
+extc HWND    cdecl Createwinwindow();
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1421,7 +1403,7 @@ typedef struct t_patch
     char           mod[TEXTLEN];         // Patched code
 } t_patch;
 
-extc HWND    cdecl Createpatchwindow(void);
+extc HWND    cdecl Createpatchwindow();
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1565,24 +1547,18 @@ extc int     cdecl Plugingetvalue(int type);
 #define MI_WINJU3      0x33754A0AL
 #define MI_APPST       0x73614F0AL     // OllyAppStarter by Homunculus
 
-// Prototypes for plugin callback functions.
-//extc int  _export cdecl ODBG_Plugindata(char shortname[32]);
-//extc int  _export cdecl ODBG_Plugininit(int ollydbgversion,HWND hw,
-//                        ulong *features);
-//extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT *debugevent);
-//extc void _export cdecl ODBG_Pluginsaveudd(t_module *pmod,int ismainmodule);
-//extc int  _export cdecl ODBG_Pluginuddrecord(t_module *pmod,int ismainmodule,
-//                        ulong tag,ulong size,void *data);
-//extc int  _export cdecl ODBG_Pluginmenu(int origin,char data[4096],void *item);
-//extc void _export cdecl ODBG_Pluginaction(int origin,int action,void *item);
-//extc int  _export cdecl ODBG_Pluginshortcut(
-//                        int origin,int ctrl,int alt,int shift,int key,
-//                        void *item);
-//extc void _export cdecl ODBG_Pluginreset(void);
-//extc int  _export cdecl ODBG_Pluginclose(void);
-//extc void _export cdecl ODBG_Plugindestroy(void);
-//extc int  _export cdecl ODBG_Paused(int reason,t_reg *reg);
-//extc int  _export cdecl ODBG_Pausedex(int reasonex,int dummy,t_reg *reg,
-//                        DEBUG_EVENT *debugevent);
-//extc int  _export cdecl ODBG_Plugincmd(int reason,t_reg *reg,char *cmd);
-
+// Typedefs for plugin callback functions.
+typedef int (*p_ODBG_Plugindata)(char shortname[32]);
+typedef int (*p_ODBG_Plugininit)(int ollydbgversion, HWND hw, ulong* features);
+typedef void (*p_ODBG_Pluginmainloop)(DEBUG_EVENT* debugevent);
+typedef void (*p_ODBG_Pluginsaveudd)(t_module* pmod, int ismainmodule);
+typedef int (*p_ODBG_Pluginuddrecord)(t_module* pmod, int ismainmodule, ulong tag, ulong size, void* data);
+typedef int (*p_ODBG_Pluginmenu)(int origin, char data[4096], void* item);
+typedef void (*p_ODBG_Pluginaction)(int origin, int action, void* item);
+typedef int (*p_ODBG_Pluginshortcut)(int origin, int ctrl, int alt, int shift, int key, void* item);
+typedef void (*p_ODBG_Pluginreset)();
+typedef int (*p_ODBG_Pluginclose)();
+typedef void (*p_ODBG_Plugindestroy)();
+typedef int (*p_ODBG_Paused)(int reason, t_reg* reg);
+typedef int (*p_ODBG_Pausedex)(int reasonex, int dummy, t_reg* reg, DEBUG_EVENT* debugevent);
+typedef int (*p_ODBG_Plugincmd)(int reason, t_reg* reg, char* cmd);

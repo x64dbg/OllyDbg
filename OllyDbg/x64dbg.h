@@ -65,3 +65,6 @@ extern int hMenuStack;
 //plugin data
 #define PLUGIN_NAME "OllyDbg"
 #define PLUGIN_VERSION 110
+
+#define dprintf(x, ...) _plugin_logprintf("[" PLUGIN_NAME "] " x, __VA_ARGS__)
+#define dputs(x) _plugin_logputs("[" PLUGIN_NAME "] " x)
