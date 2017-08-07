@@ -30,7 +30,7 @@ extc void cdecl Addtolist(long addr, int highlight, char* format, ...)
     va_list args;
     va_start(args, format);
     var_plog(__FUNCTION__, p(addr), p(highlight));
-    auto msg = StringUtils::vsprintf(format, args);
+    auto msg = StringUtils::LocalCpToUtf8(StringUtils::vsprintf(format, args));
     va_end(args);
 
     if(addr)
@@ -60,7 +60,7 @@ extc void cdecl Error(char* format, ...)
     auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
 
-    MessageBoxW(GuiGetWindowHandle(), StringUtils::Utf8ToUtf16(msg).c_str(), L"OllyDbg error", MB_ICONERROR);
+    MessageBoxW(GuiGetWindowHandle(), StringUtils::LocalCpToUtf16(msg).c_str(), L"OllyDbg error", MB_ICONERROR);
 }
 
 extc void cdecl Message(ulong addr, char* format, ...)
@@ -75,7 +75,7 @@ extc void cdecl Message(ulong addr, char* format, ...)
     va_list args;
     va_start(args, format);
     var_plog(__FUNCTION__, p(addr));
-    auto msg = StringUtils::vsprintf(format, args);
+    auto msg = StringUtils::LocalCpToUtf8(StringUtils::vsprintf(format, args));
     va_end(args);
 
     auto dollar = msg.find('$');
@@ -102,7 +102,7 @@ extc void cdecl Infoline(char* format, ...)
     va_list args;
     va_start(args, format);
     var_plog(__FUNCTION__);
-    auto msg = StringUtils::vsprintf(format, args);
+    auto msg = StringUtils::LocalCpToUtf8(StringUtils::vsprintf(format, args));
     va_end(args);
 
     msg.push_back('\n');
@@ -114,7 +114,7 @@ extc void cdecl Progress(int promille, char* format, ...)
     va_list args;
     va_start(args, format);
     var_plog(__FUNCTION__, p(promille));
-    auto msg = StringUtils::vsprintf(format, args);
+    auto msg = StringUtils::LocalCpToUtf8(StringUtils::vsprintf(format, args));
     va_end(args);
 
     if(!promille) //TODO: "If promille is 0, function closes progress bar restores previously displayed message."
@@ -139,7 +139,7 @@ extc void cdecl Flash(char* format, ...)
     va_list args;
     va_start(args, format);
     var_plog(__FUNCTION__);
-    auto msg = StringUtils::vsprintf(format, args);
+    auto msg = StringUtils::LocalCpToUtf8(StringUtils::vsprintf(format, args));
     va_end(args);
     msg.push_back('\n');
     GuiAddStatusBarMessage(msg.c_str()); //TODO: "This message automatically disappears in 500 milliseconds."

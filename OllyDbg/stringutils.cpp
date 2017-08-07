@@ -329,11 +329,11 @@ WString StringUtils::LocalCpToUtf16(const char* str)
     WString convertedString;
     if(!str || !*str)
         return convertedString;
-    int requiredSize = MultiByteToWideChar(CP_ACP, 0, str, -1, nullptr, 0);
+    int requiredSize = MultiByteToWideChar(CP_OEMCP, 0, str, -1, nullptr, 0);
     if(requiredSize > 0)
     {
         convertedString.resize(requiredSize - 1);
-        if(!MultiByteToWideChar(CP_ACP, 0, str, -1, (wchar_t*)convertedString.c_str(), requiredSize))
+        if(!MultiByteToWideChar(CP_OEMCP, 0, str, -1, (wchar_t*)convertedString.c_str(), requiredSize))
             convertedString.clear();
     }
     return convertedString;
