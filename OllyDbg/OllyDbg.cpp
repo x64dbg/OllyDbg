@@ -548,7 +548,187 @@ extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, ch
 
 extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data) { ulog(__FUNCTION__, p(tag), p(size), p(data)) return 0; }
 
-extc int cdecl Plugingetvalue(int type) { ulog(__FUNCTION__, p(type)) return 0; }
+extc int cdecl Plugingetvalue(int type)
+{
+    plog(__FUNCTION__, p(type));
+    switch(type)
+    {
+    case VAL_HINST: // Current program instance
+        oputs("UNIMPLEMENTED: VAL_HINST");
+        break;
+    case VAL_HWMAIN: // Handle of the main window
+        oputs("UNIMPLEMENTED: VAL_HWMAIN");
+        break;
+    case VAL_HWCLIENT: // Handle of the MDI client window
+        oputs("UNIMPLEMENTED: VAL_HWCLIENT");
+        break;
+    case VAL_NCOLORS: // Number of common colors
+        oputs("UNIMPLEMENTED: VAL_NCOLORS");
+        break;
+    case VAL_COLORS: // RGB values of common colors
+        oputs("UNIMPLEMENTED: VAL_COLORS");
+        break;
+    case VAL_BRUSHES: // Handles of common color brushes
+        oputs("UNIMPLEMENTED: VAL_BRUSHES");
+        break;
+    case VAL_PENS: // Handles of common color pens
+        oputs("UNIMPLEMENTED: VAL_PENS");
+        break;
+    case VAL_NFONTS: // Number of common fonts
+        oputs("UNIMPLEMENTED: VAL_NFONTS");
+        break;
+    case VAL_FONTS: // Handles of common fonts
+        oputs("UNIMPLEMENTED: VAL_FONTS");
+        break;
+    case VAL_FONTNAMES: // Internal font names
+        oputs("UNIMPLEMENTED: VAL_FONTNAMES");
+        break;
+    case VAL_FONTWIDTHS: // Average widths of common fonts
+        oputs("UNIMPLEMENTED: VAL_FONTWIDTHS");
+        break;
+    case VAL_FONTHEIGHTS: // Average heigths of common fonts
+        oputs("UNIMPLEMENTED: VAL_FONTHEIGHTS");
+        break;
+    case VAL_NFIXFONTS: // Actual number of fixed-pitch fonts
+        oputs("UNIMPLEMENTED: VAL_NFIXFONTS");
+        break;
+    case VAL_DEFFONT: // Index of default font
+        oputs("UNIMPLEMENTED: VAL_DEFFONT");
+        break;
+    case VAL_NSCHEMES: // Number of color schemes
+        oputs("UNIMPLEMENTED: VAL_NSCHEMES");
+        break;
+    case VAL_SCHEMES: // Color schemes
+        oputs("UNIMPLEMENTED: VAL_SCHEMES");
+        break;
+    case VAL_DEFSCHEME: // Index of default colour scheme
+        oputs("UNIMPLEMENTED: VAL_DEFSCHEME");
+        break;
+    case VAL_DEFHSCROLL: // Default horizontal scroll
+        oputs("UNIMPLEMENTED: VAL_DEFHSCROLL");
+        break;
+    case VAL_RESTOREWINDOWPOS: // Restore window positions from .ini
+        oputs("UNIMPLEMENTED: VAL_RESTOREWINDOWPOS");
+        break;
+    case VAL_HPROCESS: // Handle of Debuggee
+        oputs("UNIMPLEMENTED: VAL_HPROCESS");
+        break;
+    case VAL_PROCESSID: // Process ID of Debuggee
+        oputs("UNIMPLEMENTED: VAL_PROCESSID");
+        break;
+    case VAL_HMAINTHREAD: // Handle of main thread
+        oputs("UNIMPLEMENTED: VAL_HMAINTHREAD");
+        break;
+    case VAL_MAINTHREADID: // Thread ID of main thread
+        oputs("UNIMPLEMENTED: VAL_MAINTHREADID");
+        break;
+    case VAL_MAINBASE: // Base of main module in the process
+        oputs("UNIMPLEMENTED: VAL_MAINBASE");
+        break;
+    case VAL_PROCESSNAME: // Name of the active process
+        oputs("UNIMPLEMENTED: VAL_PROCESSNAME");
+        break;
+    case VAL_EXEFILENAME: // Name of the main debugged file
+        oputs("UNIMPLEMENTED: VAL_EXEFILENAME");
+        break;
+    case VAL_CURRENTDIR: // Current directory for debugged process
+        oputs("UNIMPLEMENTED: VAL_CURRENTDIR");
+        break;
+    case VAL_SYSTEMDIR: // Windows system directory
+        oputs("UNIMPLEMENTED: VAL_SYSTEMDIR");
+        break;
+    case VAL_DECODEANYIP: // Decode registers dependless on EIP
+        oputs("UNIMPLEMENTED: VAL_DECODEANYIP");
+        break;
+    case VAL_PASCALSTRINGS: // Decode Pascal-style string constants
+        oputs("UNIMPLEMENTED: VAL_PASCALSTRINGS");
+        break;
+    case VAL_ONLYASCII: // Only printable ASCII chars in dump
+        oputs("UNIMPLEMENTED: VAL_ONLYASCII");
+        break;
+    case VAL_DIACRITICALS: // Allow diacritical symbols in strings
+        oputs("UNIMPLEMENTED: VAL_DIACRITICALS");
+        break;
+    case VAL_GLOBALSEARCH: // Search from the beginning of block
+        oputs("UNIMPLEMENTED: VAL_GLOBALSEARCH");
+        break;
+    case VAL_ALIGNEDSEARCH: // Search aligned to item's size
+        oputs("UNIMPLEMENTED: VAL_ALIGNEDSEARCH");
+        break;
+    case VAL_IGNORECASE: // Ignore case in string search
+        oputs("UNIMPLEMENTED: VAL_IGNORECASE");
+        break;
+    case VAL_SEARCHMARGIN: // Floating search allows error margin
+        oputs("UNIMPLEMENTED: VAL_SEARCHMARGIN");
+        break;
+    case VAL_KEEPSELSIZE: // Keep size of hex edit selection
+        oputs("UNIMPLEMENTED: VAL_KEEPSELSIZE");
+        break;
+    case VAL_MMXDISPLAY: // MMX display mode in dialog
+        oputs("UNIMPLEMENTED: VAL_MMXDISPLAY");
+        break;
+    case VAL_WINDOWFONT: // Use calling window's font in dialog
+        oputs("UNIMPLEMENTED: VAL_WINDOWFONT");
+        break;
+    case VAL_TABSTOPS: // Distance between tab stops
+        oputs("UNIMPLEMENTED: VAL_TABSTOPS");
+        break;
+    case VAL_MODULES: // Table of modules (.EXE and .DLL)
+        oputs("UNIMPLEMENTED: VAL_MODULES");
+        break;
+    case VAL_MEMORY: // Table of allocated memory blocks
+        oputs("UNIMPLEMENTED: VAL_MEMORY");
+        break;
+    case VAL_THREADS: // Table of active threads
+        oputs("UNIMPLEMENTED: VAL_THREADS");
+        break;
+    case VAL_BREAKPOINTS: // Table of active breakpoints
+        oputs("UNIMPLEMENTED: VAL_BREAKPOINTS");
+        break;
+    case VAL_REFERENCES: // Table with found references
+        oputs("UNIMPLEMENTED: VAL_REFERENCES");
+        break;
+    case VAL_SOURCELIST: // Table of source files
+        oputs("UNIMPLEMENTED: VAL_SOURCELIST");
+        break;
+    case VAL_WATCHES: // Table of watches
+        oputs("UNIMPLEMENTED: VAL_WATCHES");
+        break;
+    case VAL_CPUFEATURES: // CPU feature bits
+        oputs("UNIMPLEMENTED: VAL_CPUFEATURES");
+        break;
+    case VAL_TRACEFILE: // Handle of run trace log file
+        oputs("UNIMPLEMENTED: VAL_TRACEFILE");
+        break;
+    case VAL_ALIGNDIALOGS: // Whether to align dialogs
+        oputs("UNIMPLEMENTED: VAL_ALIGNDIALOGS");
+        break;
+    case VAL_CPUDASM: // Dump descriptor of CPU Disassembler
+        oputs("UNIMPLEMENTED: VAL_CPUDASM");
+        break;
+    case VAL_CPUDDUMP: // Dump descriptor of CPU Dump
+        oputs("UNIMPLEMENTED: VAL_CPUDDUMP");
+        break;
+    case VAL_CPUDSTACK: // Dump descriptor of CPU Stack
+        oputs("UNIMPLEMENTED: VAL_CPUDSTACK");
+        break;
+    case VAL_APIHELP: // Name of selected API help file
+        oputs("UNIMPLEMENTED: VAL_APIHELP");
+        break;
+    case VAL_HARDBP: // Whether hardware breakpoints enabled
+        oputs("UNIMPLEMENTED: VAL_HARDBP");
+        break;
+    case VAL_PATCHES: // Table of patches
+        oputs("UNIMPLEMENTED: VAL_PATCHES");
+        break;
+    case VAL_HINTS: // Sorted data with analysis hints
+        oputs("UNIMPLEMENTED: VAL_HINTS");
+        break;
+    default:
+        __debugbreak();
+    }
+    return 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// UNDOCUMENTED FUNCTIONS /////////////////////////////
