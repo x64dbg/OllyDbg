@@ -17,6 +17,9 @@
     <ClCompile Include="x64dbg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stringutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OllyDbg.h">
@@ -26,6 +29,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="loghacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stringutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,10 +4,11 @@
 #include "x64dbg.h"
 #include <stdarg.h>
 #include "loghacks.h"
+#include "stringutils.h"
 
 //NOTE: SEG_XXX are overloaded. The OllyDbg ones are renamed to ODBG_SEG_XXX
 
-#define var_ulog(function, ...) \
+#define var_plog(function, ...) \
     { \
         oprintf("%s(\n", function); \
         logArgs(__VA_ARGS__); \
@@ -19,7 +20,7 @@
             oprintf("\""); \
         } \
         oprintf("\n"); \
-        oprintf(") = UNIMPLEMENTED\n"); \
+        oprintf(")\n"); \
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,52 +29,120 @@ extc void cdecl Addtolist(long addr, int highlight, char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__, p(addr), p(highlight));
+    var_plog(__FUNCTION__, p(addr), p(highlight));
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+
+    if(addr)
+        _plugin_logprintf("%p %s\n", addr, msg.c_str());
+    else
+        _plugin_logputs(msg.c_str());
 }
 
-extc void cdecl Updatelist() { ulog(__FUNCTION__) }
+extc void cdecl Updatelist()
+{
+    ulog(__FUNCTION__);
+    GuiFlushLog();
+}
 
-extc HWND cdecl Createlistwindow() { ulog(__FUNCTION__) return 0; }
+extc HWND cdecl Createlistwindow()
+{
+    ulog(__FUNCTION__);
+    //TODO: "Creates or restores log window (window that displays contents of log buffer) on the screen.";
+    return 0;
+}
 
 extc void cdecl Error(char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__);
+    var_plog(__FUNCTION__);
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+
+    MessageBoxW(GuiGetWindowHandle(), StringUtils::Utf8ToUtf16(msg).c_str(), L"OllyDbg error", MB_ICONERROR);
 }
 
 extc void cdecl Message(ulong addr, char* format, ...)
 {
+    if(!format)
+    {
+        //TODO: "If format is NULL, message will be removed from the bottom line but not added to the log."
+        GuiAddStatusBarMessage("\n");
+        return;
+    }
+
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__, p(addr));
+    var_plog(__FUNCTION__, p(addr));
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+
+    auto dollar = msg.find('$');
+    if(dollar == String::npos)
+        _plugin_logputs(msg.c_str());
+    else
+    {
+        auto log = msg.substr(0, dollar);
+        _plugin_logputs(log.c_str());
+        msg[dollar] = '-';
+        msg.push_back('\n');
+        GuiAddStatusBarMessage(msg.c_str());
+    }
 }
 
 extc void cdecl Infoline(char* format, ...)
 {
+    if(!format)
+    {
+        GuiAddStatusBarMessage("\n");
+        return;
+    }
+
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__);
+    var_plog(__FUNCTION__);
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+
+    msg.push_back('\n');
+    GuiAddStatusBarMessage(msg.c_str());
 }
 
 extc void cdecl Progress(int promille, char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__, p(promille));
+    var_plog(__FUNCTION__, p(promille));
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+
+    if(!promille) //TODO: "If promille is 0, function closes progress bar restores previously displayed message."
+    {
+        GuiAddStatusBarMessage("\n");
+        return;
+    }
+
+    auto dollar = msg.find('$');
+    if(dollar == String::npos)
+        GuiAddStatusBarMessage(StringUtils::sprintf("%.1f%%: %s\n", promille / 10.0, msg.c_str()).c_str());
+    else
+    {
+        auto before = msg.substr(0, dollar);
+        auto after = msg.substr(dollar + 1);
+        GuiAddStatusBarMessage(StringUtils::sprintf("%s- %.1f%% -%s\n", before.c_str(), promille / 10.0, after.c_str()).c_str());
+    }
 }
 
 extc void cdecl Flash(char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    var_ulog(__FUNCTION__);
+    var_plog(__FUNCTION__);
+    auto msg = StringUtils::vsprintf(format, args);
     va_end(args);
+    msg.push_back('\n');
+    GuiAddStatusBarMessage(msg.c_str()); //TODO: "This message automatically disappears in 500 milliseconds."
 }
 
 ////////////////////////////////////////////////////////////////////////////////
