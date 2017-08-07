@@ -12,9 +12,89 @@ int hMenuDisasm;
 int hMenuDump;
 int hMenuStack;
 
+static HINSTANCE hInstMain;
 static int hEntryPool = 100;
 struct OllyPlugin;
 static std::unordered_map<int, std::pair<OllyPlugin*, int>> menuActionMap; //x64dbg hMenuEntry -> OllyDbg plugin + action
+
+static void eventReg(CBTYPE cbType)
+{
+    static bool registeredEvents[CB_LAST];
+    if(registeredEvents[cbType])
+        return;
+    auto exportName = [cbType]()
+    {
+        switch(cbType)
+        {
+        case CB_INITDEBUG:
+            return "CBINITDEBUG";
+        case CB_STOPDEBUG:
+            return "CBSTOPDEBUG";
+        case CB_CREATEPROCESS:
+            return "CBCREATEPROCESS";
+        case CB_EXITPROCESS:
+            return "CBEXITPROCESS";
+        case CB_CREATETHREAD:
+            return "CBCREATETHREAD";
+        case CB_EXITTHREAD:
+            return "CBEXITTHREAD";
+        case CB_SYSTEMBREAKPOINT:
+            return "CBSYSTEMBREAKPOINT";
+        case CB_LOADDLL:
+            return "CBLOADDLL";
+        case CB_UNLOADDLL:
+            return "CBUNLOADDLL";
+        case CB_OUTPUTDEBUGSTRING:
+            return "CBOUTPUTDEBUGSTRING";
+        case CB_EXCEPTION:
+            return "CBEXCEPTION";
+        case CB_BREAKPOINT:
+            return "CBBREAKPOINT";
+        case CB_PAUSEDEBUG:
+            return "CBPAUSEDEBUG";
+        case CB_RESUMEDEBUG:
+            return "CBRESUMEDEBUG";
+        case CB_STEPPED:
+            return "CBSTEPPED";
+        case CB_ATTACH:
+            return "CBATTACH";
+        case CB_DETACH:
+            return "CBDETACH";
+        case CB_DEBUGEVENT:
+            return "CBDEBUGEVENT";
+        case CB_MENUENTRY:
+            return "CBMENUENTRY";
+        case CB_WINEVENT:
+            return "CBWINEVENT";
+        case CB_WINEVENTGLOBAL:
+            return "CBWINEVENTGLOBAL";
+        case CB_LOADDB:
+            return "CBLOADDB";
+        case CB_SAVEDB:
+            return "CBSAVEDB";
+        case CB_FILTERSYMBOL:
+            return "CBFILTERSYMBOL";
+        case CB_TRACEEXECUTE:
+            return "CBTRACEEXECUTE";
+        case CB_ANALYZE:
+            return "CBANALYZE";
+        case CB_ADDRINFO:
+            return "CBADDRINFO";
+        case CB_VALFROMSTRING:
+            return "CBVALFROMSTRING";
+        case CB_VALTOSTRING:
+            return "CBVALTOSTRING";
+        default:
+            __debugbreak();
+        }
+    }();
+    auto cbPlugin = CBPLUGIN(GetProcAddress(hInstMain, exportName));
+    if(!cbPlugin)
+        __debugbreak();
+    _plugin_registercallback(pluginHandle, cbType, cbPlugin);
+    oprintf("eventReg => %s\n", exportName);
+    registeredEvents[cbType] = true;
+}
 
 struct OllyPlugin
 {
@@ -44,13 +124,16 @@ struct OllyPlugin
 
         ODBG_Plugindata = p_ODBG_Plugindata(GetProcAddress(hInst, "_ODBG_Plugindata"));
         ODBG_Plugininit = p_ODBG_Plugininit(GetProcAddress(hInst, "_ODBG_Plugininit"));
-        ODBG_Pluginmainloop = p_ODBG_Pluginmainloop(GetProcAddress(hInst, "_ODBG_Pluginmainloop"));
+        if(ODBG_Pluginmainloop = p_ODBG_Pluginmainloop(GetProcAddress(hInst, "_ODBG_Pluginmainloop")))
+            eventReg(CB_DEBUGEVENT);
         ODBG_Pluginsaveudd = p_ODBG_Pluginsaveudd(GetProcAddress(hInst, "_ODBG_Pluginsaveudd"));
         ODBG_Pluginuddrecord = p_ODBG_Pluginuddrecord(GetProcAddress(hInst, "_ODBG_Pluginuddrecord"));
         ODBG_Pluginmenu = p_ODBG_Pluginmenu(GetProcAddress(hInst, "_ODBG_Pluginmenu"));
-        ODBG_Pluginaction = p_ODBG_Pluginaction(GetProcAddress(hInst, "_ODBG_Pluginaction"));
+        if(ODBG_Pluginaction = p_ODBG_Pluginaction(GetProcAddress(hInst, "_ODBG_Pluginaction")))
+            eventReg(CB_MENUENTRY);
         ODBG_Pluginshortcut = p_ODBG_Pluginshortcut(GetProcAddress(hInst, "_ODBG_Pluginshortcut"));
-        ODBG_Pluginreset = p_ODBG_Pluginreset(GetProcAddress(hInst, "_ODBG_Pluginreset"));
+        if(ODBG_Pluginreset = p_ODBG_Pluginreset(GetProcAddress(hInst, "_ODBG_Pluginreset")))
+            eventReg(CB_INITDEBUG);
         ODBG_Pluginclose = p_ODBG_Pluginclose(GetProcAddress(hInst, "_ODBG_Pluginclose"));
         ODBG_Plugindestroy = p_ODBG_Plugindestroy(GetProcAddress(hInst, "_ODBG_Plugindestroy"));
         ODBG_Paused = p_ODBG_Paused(GetProcAddress(hInst, "_ODBG_Paused"));
@@ -331,4 +414,18 @@ PLUG_EXPORT void CBINITDEBUG(CBTYPE, PLUG_CB_INITDEBUG* info)
     for(auto & plugin : ollyPlugins)
         if(plugin.ODBG_Pluginreset)
             plugin.ODBG_Pluginreset();
+}
+
+BOOL WINAPI DllMain(
+    _In_ HINSTANCE hinstDLL,
+    _In_ DWORD     fdwReason,
+    _In_ LPVOID    lpvReserved
+)
+{
+    if(fdwReason == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hinstDLL);
+        hInstMain = hinstDLL;
+    }
+    return TRUE;
 }
