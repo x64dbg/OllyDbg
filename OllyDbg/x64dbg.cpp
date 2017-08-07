@@ -86,6 +86,7 @@ static void eventReg(CBTYPE cbType)
             return "CBVALTOSTRING";
         default:
             __debugbreak();
+            return "";
         }
     }();
     auto cbPlugin = CBPLUGIN(GetProcAddress(hInstMain, exportName));
