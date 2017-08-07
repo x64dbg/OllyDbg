@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OllyDbg", "OllyDbg\OllyDbg.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x64dbg", "x64dbg\x64dbg.vcxproj", "{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "0llyDbgLoad", "0llyDbgLoad\0llyDbgLoad.vcxproj", "{176822C9-3CF8-41A9-81AB-8BBD3E3E2A32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Debug|Win32.Build.0 = Debug|Win32
 		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Release|Win32.ActiveCfg = Release|Win32
 		{E31C7443-9A59-497C-9FA6-D0DD9642D3C4}.Release|Win32.Build.0 = Release|Win32
+		{176822C9-3CF8-41A9-81AB-8BBD3E3E2A32}.Debug|Win32.ActiveCfg = Debug|Win32
+		{176822C9-3CF8-41A9-81AB-8BBD3E3E2A32}.Debug|Win32.Build.0 = Debug|Win32
+		{176822C9-3CF8-41A9-81AB-8BBD3E3E2A32}.Release|Win32.ActiveCfg = Release|Win32
+		{176822C9-3CF8-41A9-81AB-8BBD3E3E2A32}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
