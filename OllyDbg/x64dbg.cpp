@@ -12,7 +12,7 @@ HWND hwndOlly;
 static int hEntryPool = 100;
 struct OllyPlugin;
 static std::unordered_map<int, std::tuple<OllyPlugin*, int, int>> menuActionMap; //x64dbg hMenuEntry -> plugin + action + origin
-static std::unordered_map<HINSTANCE, OllyPlugin*> hinstPluginMap;
+static std::unordered_map<HINSTANCE, std::string> hinstPluginMap;
 static HANDLE hEventOlly;
 
 static void createOllyWindow()
@@ -243,6 +243,11 @@ struct OllyPlugin
     Menu menuDump;
     Menu menuStack;
 
+    OllyPlugin()
+    {
+        memset(shortname, 0, sizeof(shortname));
+    }
+
     bool Load(const wchar_t* szFileName)
     {
         hInst = LoadLibraryW(szFileName);
@@ -275,8 +280,7 @@ struct OllyPlugin
             return false;
         }
 
-        hinstPluginMap[hInst] = this;
-
+        oprintf("ODBG_Plugindata =>");
         auto version = ODBG_Plugindata(shortname);
         if(version < 106 || version > 110)
         {
@@ -285,7 +289,18 @@ struct OllyPlugin
             FreeLibrary(hInst);
             return false;
         }
+        else if(!*shortname)
+        {
+            dputs("_ODBG_Plugindata returned empty shortname");
+            hinstPluginMap.erase(hInst);
+            FreeLibrary(hInst);
+            return false;
+        }
+        oprintf(" \"%s\"\n", shortname);
 
+        hinstPluginMap[hInst] = shortname;
+
+        oprintf("ODBG_Plugininit");
         if(ODBG_Plugininit(ODBG_PLUGIN_VERSION, hwndOlly, nullptr) == -1)
         {
             dprintf("_ODBG_Plugininit failed...\n");
@@ -293,6 +308,7 @@ struct OllyPlugin
             FreeLibrary(hInst);
             return false;
         }
+        oputs(" DONE!");
 
         return true;
     }
@@ -470,7 +486,9 @@ std::string sectionFromHinst(HINSTANCE dllinst)
         __debugbreak();
         return "OllyDbgPlugins";
     }
-    return std::string("OllyDbg:") + found->second->shortname;
+    if(found->second.empty())
+        __debugbreak();
+    return StringUtils::sprintf("OllyDbg %s", found->second.c_str());
 }
 
 static void loadPlugins()
