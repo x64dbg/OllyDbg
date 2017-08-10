@@ -346,7 +346,7 @@ struct OllyPlugin
 
         auto addSubmenu = [&]()
         {
-            id = StringUtils::Trim(id);
+            id = StringUtils::TrimLeft(id, "0123456789 \n\r\t");
             name = StringUtils::Trim(name);
 
             if(id.empty() && name.empty())
