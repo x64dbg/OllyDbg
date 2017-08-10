@@ -410,7 +410,7 @@ static void loadPlugins()
         }
     }
     while(FindNextFileW(hSearch, &fd));
-    CloseHandle(hSearch);
+    FindClose(hSearch);
 }
 
 static void loadConsole()
