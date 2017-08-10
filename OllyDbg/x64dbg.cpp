@@ -99,6 +99,53 @@ static void eventReg(CBTYPE cbType)
     registeredEvents[cbType] = true;
 }
 
+struct DumpItem
+{
+    t_dump item;
+    int hWindow;
+    bool prepared;
+
+    static ulong specfunc(char*, ulong, ulong, ulong, t_disasm*, int)
+    {
+        oputs("specfunc = UNIMPLEMENTED");
+        return 0;
+    }
+
+    static int drawfunc(char*, char*, int*, t_sortheader*, int)
+    {
+        oputs("drawfunc = UNIMPLEMENTED");
+        return 0;
+    }
+
+    DumpItem(int hWindow)
+        : hWindow(hWindow), prepared(false)
+    {
+        memset(&item, 0, sizeof(item));
+        item.table.drawfunc = drawfunc;
+        item.specdump = specfunc;
+    }
+
+    void* PrepareItem()
+    {
+        oprintf("PrepareItem() = ");
+        if(!prepared)
+        {
+            //TODO: many fields are unsupported
+            SELECTIONDATA selection;
+            if(!GuiSelectionGet(hWindow, &selection))
+                __debugbreak();
+            item.startsel = item.sel0 = selection.start;
+            item.sel1 = selection.end + 1;
+
+            oputs("prepared");
+            prepared = true;
+        }
+        else
+            oputs("cached");
+        return &item;
+    }
+} disasmItem(GUI_DISASSEMBLY), dumpItem(GUI_DUMP), stackItem(GUI_STACK);
+
 struct OllyPlugin
 {
     HINSTANCE hInst = 0;
@@ -124,6 +171,14 @@ struct OllyPlugin
         int hMenu;
         int origin;
         std::string data;
+        DumpItem* item;
+
+        Menu() { }
+
+        Menu(int hMenu, int origin, DumpItem* item)
+            : hMenu(hMenu), origin(origin), item(item)
+        {
+        }
     };
 
     Menu menuDisasm;
@@ -184,12 +239,17 @@ struct OllyPlugin
     {
         switch(hMenu)
         {
+        case PM_DISASM:
         case GUI_DISASM_MENU:
             return &menuDisasm;
+        case PM_CPUDUMP:
         case GUI_DUMP_MENU:
             return &menuDump;
+        case PM_CPUSTACK:
         case GUI_STACK_MENU:
             return &menuStack;
+        case PM_MAIN:
+            return nullptr;
         default:
             __debugbreak();
             return nullptr;
@@ -417,12 +477,9 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
         *data = '\0';
         if(plugin.ODBG_Pluginmenu)
         {
-            plugin.menuDisasm.hMenu = _plugin_menuadd(hMenuDisasm, plugin.shortname);
-            plugin.menuDisasm.origin = PM_DISASM;
-            plugin.menuDump.hMenu = _plugin_menuadd(hMenuDump, plugin.shortname);
-            plugin.menuDump.origin = PM_CPUDUMP;
-            plugin.menuStack.hMenu = _plugin_menuadd(hMenuStack, plugin.shortname);
-            plugin.menuStack.origin = PM_CPUSTACK;
+            plugin.menuDisasm = OllyPlugin::Menu(_plugin_menuadd(hMenuDisasm, plugin.shortname), PM_DISASM, &disasmItem);
+            plugin.menuDump = OllyPlugin::Menu(_plugin_menuadd(hMenuDump, plugin.shortname), PM_CPUDUMP, &dumpItem);
+            plugin.menuStack = OllyPlugin::Menu(_plugin_menuadd(hMenuStack, plugin.shortname), PM_CPUSTACK, &stackItem);
 
             if(plugin.ODBG_Pluginmenu(PM_MAIN, data, 0) == 1)
                 plugin.ParseMenu(data, _plugin_menuadd(hMenu, plugin.shortname), PM_MAIN);
@@ -444,7 +501,12 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* info)
         __debugbreak();
     auto & plugin = *std::get<0>(found->second);
     if(plugin.ODBG_Pluginaction)
-        plugin.ODBG_Pluginaction(std::get<2>(found->second), std::get<1>(found->second), 0);
+    {
+        int origin = std::get<2>(found->second);
+        int action = std::get<1>(found->second);
+        auto menu = plugin.GetMenuOrigin(origin);
+        plugin.ODBG_Pluginaction(origin, action, menu ? &menu->item->item : 0);
+    }
 }
 
 PLUG_EXPORT void CBDEBUGEVENT(CBTYPE, PLUG_CB_DEBUGEVENT* info)
@@ -464,13 +526,14 @@ PLUG_EXPORT void CBINITDEBUG(CBTYPE, PLUG_CB_INITDEBUG* info)
 PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
 {
     char data[4096];
+    disasmItem.prepared = dumpItem.prepared = stackItem.prepared = false;
     for(auto & plugin : ollyPlugins)
     {
         *data = '\0';
         if(plugin.ODBG_Pluginmenu)
         {
             auto & menu = *plugin.GetMenuOrigin(info->hMenu);
-            if(plugin.ODBG_Pluginmenu(menu.origin, data, 0)) //TODO: item
+            if(plugin.ODBG_Pluginmenu(menu.origin, data, menu.item->PrepareItem()))
             {
                 if(menu.data != data)
                 {
