@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "0llyDbgLoad", "0llyDbgLoad\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OllyDbgEvents", "OllyDbgEvents\OllyDbgEvents.vcxproj", "{BEC1E820-8CBC-4DF8-A886-AB48D5EA8D1D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OllyDbgImports", "OllyDbgImports\OllyDbgImports.vcxproj", "{E4E66BC0-3AF9-403B-8E5F-BCC88AD3837F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{BEC1E820-8CBC-4DF8-A886-AB48D5EA8D1D}.Debug|Win32.Build.0 = Debug|Win32
 		{BEC1E820-8CBC-4DF8-A886-AB48D5EA8D1D}.Release|Win32.ActiveCfg = Release|Win32
 		{BEC1E820-8CBC-4DF8-A886-AB48D5EA8D1D}.Release|Win32.Build.0 = Release|Win32
+		{E4E66BC0-3AF9-403B-8E5F-BCC88AD3837F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4E66BC0-3AF9-403B-8E5F-BCC88AD3837F}.Debug|Win32.Build.0 = Debug|Win32
+		{E4E66BC0-3AF9-403B-8E5F-BCC88AD3837F}.Release|Win32.ActiveCfg = Release|Win32
+		{E4E66BC0-3AF9-403B-8E5F-BCC88AD3837F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
