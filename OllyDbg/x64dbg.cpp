@@ -7,11 +7,6 @@
 
 HINSTANCE hInstMain;
 int pluginHandle;
-HWND hwndDlg;
-int hMenu;
-int hMenuDisasm;
-int hMenuDump;
-int hMenuStack;
 HWND hwndOlly;
 
 static int hEntryPool = 100;
@@ -233,6 +228,8 @@ struct OllyPlugin
         int origin;
         std::string data;
         DumpItem* item;
+        std::vector<int> topMenus;
+        std::vector<int> topEntries;
 
         Menu() { }
 
@@ -321,14 +318,14 @@ struct OllyPlugin
         }
     }
 
-    void ParseMenu(const std::string & data, int hMenuRoot, int origin)
+    void ParseMenu(Menu* menu)
     {
-        oprintf("ParseMenu (%s) => \"%s\"\n", shortname, data.c_str());
+        oprintf("ParseMenu (%s) => \"%s\"\n", shortname, menu->data.c_str());
 
         std::string id;
         std::string name;
         std::vector<int> menuStack;
-        menuStack.push_back(hMenuRoot);
+        menuStack.push_back(menu->hMenu);
 
         auto hMenu = [&]()
         {
@@ -356,6 +353,9 @@ struct OllyPlugin
             auto hSubMenu = _plugin_menuadd(hMenu(), id.c_str());
             oprintf("added menu to %d: \"%s\" => %d\n", hMenu(), id.c_str(), hSubMenu);
 
+            if(menuStack.size() == 1)
+                menu->topMenus.push_back(hSubMenu);
+
             menuStack.push_back(hSubMenu);
 
             id.clear();
@@ -379,11 +379,14 @@ struct OllyPlugin
 
             auto hEntry = hEntryPool++;
 
-            menuActionMap[hEntry] = std::make_tuple(this, int(idNum), origin);
-
             if(!_plugin_menuaddentry(hMenu(), hEntry, name.c_str()))
                 __debugbreak();
             oprintf("added entry to %d: %d => %d, \"%s\"\n", hMenu(), hEntry, idNum, name.c_str());
+
+            menuActionMap[hEntry] = std::make_tuple(this, int(idNum), menu->origin);
+
+            if(menuStack.size() == 1)
+                menu->topMenus.push_back(hEntry);
 
             if(ch == '|')
             {
@@ -400,9 +403,9 @@ struct OllyPlugin
             state = None;
         };
 
-        for(size_t i = 0; i < data.length(); i++)
+        for(size_t i = 0; i < menu->data.length(); i++)
         {
-            auto ch = data[i];
+            auto ch = menu->data[i];
             switch(state)
             {
             case None:
@@ -543,28 +546,28 @@ PLUG_EXPORT bool plugstop()
 
 PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
 {
-    hwndDlg = setupStruct->hwndDlg;
-    hMenu = setupStruct->hMenu;
-    hMenuDisasm = setupStruct->hMenuDisasm;
-    hMenuDump = setupStruct->hMenuDump;
-    hMenuStack = setupStruct->hMenuStack;
-
     char data[4096];
     for(auto & plugin : ollyPlugins)
     {
         *data = '\0';
         if(plugin.ODBG_Pluginmenu)
         {
-            plugin.menuDisasm = OllyPlugin::Menu(_plugin_menuadd(hMenuDisasm, plugin.shortname), PM_DISASM, &disasmItem);
-            plugin.menuDump = OllyPlugin::Menu(_plugin_menuadd(hMenuDump, plugin.shortname), PM_CPUDUMP, &dumpItem);
-            plugin.menuStack = OllyPlugin::Menu(_plugin_menuadd(hMenuStack, plugin.shortname), PM_CPUSTACK, &stackItem);
+            oprintf("ODBG_Pluginmenu => \"%s\"\n", plugin.shortname);
 
-            if(plugin.ODBG_Pluginmenu(PM_MAIN, data, 0) == 1)
-                plugin.ParseMenu(data, _plugin_menuadd(hMenu, plugin.shortname), PM_MAIN);
+            plugin.menuDisasm = OllyPlugin::Menu(setupStruct->hMenuDisasm, PM_DISASM, &disasmItem);
+            plugin.menuDump = OllyPlugin::Menu(setupStruct->hMenuDump, PM_CPUDUMP, &dumpItem);
+            plugin.menuStack = OllyPlugin::Menu(setupStruct->hMenuStack, PM_CPUSTACK, &stackItem);
+
+            if(plugin.ODBG_Pluginmenu(PM_MAIN, data, 0) != 0)
+            {
+                OllyPlugin::Menu menu(_plugin_menuadd(setupStruct->hMenu, plugin.shortname), PM_MAIN, nullptr);
+                menu.data = data;
+                plugin.ParseMenu(&menu);
+            }
             else
             {
                 menuActionMap[hEntryPool] = std::make_tuple(&plugin, 0, PM_MAIN);
-                _plugin_menuaddentry(hMenu, hEntryPool++, plugin.shortname);
+                _plugin_menuaddentry(setupStruct->hMenu, hEntryPool++, plugin.shortname);
             }
         }
     }
@@ -616,9 +619,15 @@ PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
                 if(menu.data != data)
                 {
                     menu.data = data;
-                    if(!_plugin_menuclear(menu.hMenu))
-                        __debugbreak();
-                    plugin.ParseMenu(menu.data, menu.hMenu, menu.origin);
+                    for(auto & hMenu : menu.topMenus)
+                        if(!_plugin_menuremove(hMenu))
+                            __debugbreak();
+                    menu.topMenus.clear();
+                    for(auto & hEntry : menu.topEntries)
+                        if(!_plugin_menuentryremove(pluginHandle, hEntry))
+                            __debugbreak();
+                    menu.topEntries.clear();
+                    plugin.ParseMenu(&menu);
                 }
                 else
                     oprintf("using cached %d menu for \"%s\"\n", info->hMenu, plugin.shortname);

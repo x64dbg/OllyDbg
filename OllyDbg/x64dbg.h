@@ -56,12 +56,6 @@
 
 //superglobal variables
 extern HINSTANCE hInstMain;
-extern int pluginHandle;
-extern HWND hwndDlg;
-extern int hMenu;
-extern int hMenuDisasm;
-extern int hMenuDump;
-extern int hMenuStack;
 extern HWND hwndOlly;
 
 std::string sectionFromHinst(HINSTANCE dllinst);
