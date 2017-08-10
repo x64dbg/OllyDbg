@@ -74,11 +74,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="disasm\asmserv.c">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="disasm\assembl.c">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="disasm\disasm.c">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="OllyDbg.cpp" />
     <ClCompile Include="stringutils.cpp" />
     <ClCompile Include="x64dbg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="disasm\disasm.h" />
     <ClInclude Include="loghacks.h" />
     <ClInclude Include="OllyDbg.h" />
     <ClInclude Include="oprintf.h" />

@@ -12,6 +12,12 @@
     <Filter Include="Header Files\pluginsdk">
       <UniqueIdentifier>{48df95c5-6bd8-4549-923f-620331b94fc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\disasm">
+      <UniqueIdentifier>{b3db82b4-a55b-4afd-9374-e0c141c4cc29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\disasm">
+      <UniqueIdentifier>{839d524d-1b49-42f4-a0d5-7c45adae5de3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OllyDbg.cpp">
@@ -22,6 +28,15 @@
     </ClCompile>
     <ClCompile Include="stringutils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm\asmserv.c">
+      <Filter>Source Files\disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm\assembl.c">
+      <Filter>Source Files\disasm</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm\disasm.c">
+      <Filter>Source Files\disasm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="pluginsdk\bridgemain.h">
       <Filter>Header Files\pluginsdk</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm\disasm.h">
+      <Filter>Header Files\disasm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

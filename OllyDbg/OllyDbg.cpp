@@ -147,20 +147,31 @@ extc void cdecl Flash(char* format, ...)
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// DATA FORMATTING FUNCTIONS ///////////////////////////
-extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment) { ulog(__FUNCTION__, p(addr), p(base), p(addrmode), p(symb), p(nsymb), p(comment)) return 0; }
+extc int cdecl Decodeaddress(ulong addr, ulong base, int addrmode, char* symb, int nsymb, char* comment)
+{
+    plog(__FUNCTION__, p(addr), p(base), p(addrmode), p(symb), p(nsymb), p(comment));
+
+    //TODO: implement properly
+    if(nsymb)
+    {
+        sprintf_s(symb, nsymb, "%p", addr);
+        return strlen(symb);
+    }
+    return 0;
+}
 
 extc int cdecl Decoderelativeoffset(ulong addr, int addrmode, char* symb, int nsymb) { ulog(__FUNCTION__, p(addr), p(addrmode), p(symb), p(nsymb)) return 0; }
 
 extc int cdecl Decodecharacter(char* s, uint c) { ulog(__FUNCTION__, p(s), p(c)) return 0; }
 
-extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
+//extc int cdecl Printfloat4(char* s, float f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
-extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, p(s), p(d)) return 0; }
+//extc int cdecl Printfloat8(char* s, double d) { ulog(__FUNCTION__, p(s), p(d)) return 0; }
 
 //TODO: this will break because sizeof(long double) != 10 with MSVC
-extc int cdecl Printfloat10(char* s, long double ext) { __debugbreak(); return 0; }
+//extc int cdecl Printfloat10(char* s, long double ext) { __debugbreak(); return 0; }
 
-extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
+//extc int cdecl Print3dnow(char* s, uchar* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
 extc int cdecl Printsse(char* s, char* f) { ulog(__FUNCTION__, p(s), p(f)) return 0; }
 
@@ -284,23 +295,23 @@ extc int cdecl Findsymbolicname(ulong addr, char* fname) { ulog(__FUNCTION__, p(
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// DISASSEMBLY FUNCTIONS /////////////////////////////
-extc ulong cdecl Disasm(uchar* src, ulong srcsize, ulong srcip, uchar* srcdec, t_disasm* disasm, int disasmmode, ulong threadid) { ulog(__FUNCTION__, p(src), p(srcsize), p(srcip), p(srcdec), p(disasm), p(disasmmode), p(threadid)) return 0; }
+//extc ulong cdecl Disasm(uchar* src, ulong srcsize, ulong srcip, uchar* srcdec, t_disasm* disasm, int disasmmode, ulong threadid) { ulog(__FUNCTION__, p(src), p(srcsize), p(srcip), p(srcdec), p(disasm), p(disasmmode), p(threadid)) return 0; }
 
-extc ulong cdecl Disassembleback(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
+//extc ulong cdecl Disassembleback(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
 
-extc ulong cdecl Disassembleforward(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
+//extc ulong cdecl Disassembleforward(uchar* block, ulong base, ulong size, ulong ip, int n, int usedec) { ulog(__FUNCTION__, p(block), p(base), p(size), p(ip), p(n), p(usedec)) return 0; }
 
 extc int cdecl Issuspicious(char* cmd, ulong size, ulong ip, ulong threadid, t_reg* preg, char* s) { ulog(__FUNCTION__, p(cmd), p(size), p(ip), p(threadid), p(preg), p(s)) return 0; }
 
-extc int cdecl Isfilling(ulong offset, char* data, ulong size, ulong align) { ulog(__FUNCTION__, p(offset), p(data), p(size), p(align)) return 0; }
+//extc int cdecl Isfilling(ulong offset, char* data, ulong size, ulong align) { ulog(__FUNCTION__, p(offset), p(data), p(size), p(align)) return 0; }
 
 extc int cdecl Isprefix(int c) { ulog(__FUNCTION__, p(c)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// ASSEMBLY FUNCTIONS //////////////////////////////
-extc int cdecl Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt, int constsize, char* errtext) { ulog(__FUNCTION__, p(cmd), p(ip), p(model), p(attempt), p(constsize), p(errtext)) return 0; }
+//extc int cdecl Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt, int constsize, char* errtext) { ulog(__FUNCTION__, p(cmd), p(ip), p(model), p(attempt), p(constsize), p(errtext)) return 0; }
 
-extc int cdecl Checkcondition(int code, ulong flags) { ulog(__FUNCTION__, p(code), p(flags)) return 0; }
+//extc int cdecl Checkcondition(int code, ulong flags) { ulog(__FUNCTION__, p(code), p(flags)) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// EXPRESSIONS //////////////////////////////////
@@ -370,11 +381,36 @@ extc ulong cdecl Readcommand(ulong ip, char* cmd) { ulog(__FUNCTION__, p(ip), p(
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// MODULE FUNCTIONS ///////////////////////////////
-extc t_module* cdecl Findmodule(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
+extc t_module* cdecl Findmodule(ulong addr)
+{
+    plog(__FUNCTION__, p(addr));
+
+    Script::Module::ModuleInfo info;
+    if(!Script::Module::InfoFromAddr(addr, &info))
+        return 0;
+
+    //TODO: not all fields are populated
+    static t_module mod;
+    memset(&mod, 0, sizeof(mod));
+
+    mod.base = info.base;
+    mod.size = info.size;
+    mod.entry = info.entry;
+    strcpy_s(mod.path, info.path);
+    mod.nsect = info.sectionCount;
+    mod.issystemdll = DbgFunctions()->ModGetParty(info.base) == 1;
+
+    return &mod;
+}
 
 extc t_fixup* cdecl Findfixup(t_module* pmod, ulong addr) { ulog(__FUNCTION__, p(pmod), p(addr)) return 0; }
 
-extc uchar* cdecl Finddecode(ulong addr, ulong* psize) { ulog(__FUNCTION__, p(addr), p(psize)) return 0; }
+extc uchar* cdecl Finddecode(ulong addr, ulong* psize)
+{
+    ulog(__FUNCTION__, p(addr), p(psize));
+    *psize = 0;
+    return 0;
+}
 
 extc ulong cdecl Findfileoffset(t_module* pmod, ulong addr) { ulog(__FUNCTION__, p(pmod), p(addr)) return 0; }
 
@@ -611,16 +647,24 @@ extc int cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def)
 {
     plog(__FUNCTION__, p(dllinst), p(key), p(def));
     duint setting = 0;
-    if(!BridgeSettingGetUint(sectionFromHinst(dllinst).c_str(), key, &setting))
+    auto section = sectionFromHinst(dllinst);
+    if(!BridgeSettingGetUint(section.c_str(), key, &setting))
+    {
         setting = def;
+        BridgeSettingSetUint(section.c_str(), key, setting);
+    }
     return setting;
 }
 
 extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def)
 {
     plog(__FUNCTION__, p(dllinst), p(key), p(s), p(def));
-    if(!BridgeSettingGet(sectionFromHinst(dllinst).c_str(), key, s))
+    auto section = sectionFromHinst(dllinst);
+    if(!BridgeSettingGet(section.c_str(), key, s))
+    {
         strcpy_s(s, TEXTLEN, def);
+        BridgeSettingSet(section.c_str(), key, s);
+    }
     return strlen(s);
 }
 
