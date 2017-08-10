@@ -490,7 +490,31 @@ extc int cdecl Injectcode(ulong threadid, t_inject* inject, char* data, ulong da
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// CPU-SPECIFIC FUNCTIONS ////////////////////////////
-extc void cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode) { ulog(__FUNCTION__, p(threadid), p(asmaddr), p(dumpaddr), p(stackaddr), p(mode)) }
+extc void cdecl Setcpu(ulong threadid, ulong asmaddr, ulong dumpaddr, ulong stackaddr, int mode)
+{
+    plog(__FUNCTION__, p(threadid), p(asmaddr), p(dumpaddr), p(stackaddr), p(mode));
+
+    if(dumpaddr && DbgMemIsValidReadPtr(dumpaddr))
+        DbgCmdExecDirect(StringUtils::sprintf("dump 0x%p", dumpaddr).c_str());
+
+    if(threadid != 0) //switch to thread
+        DbgCmdExecDirect(StringUtils::sprintf("switchthread 0x%X", threadid).c_str());
+    else
+    {
+        if(Script::Memory::IsValidPtr(stackaddr))
+            DbgCmdExecDirect(StringUtils::sprintf("sdump 0x%p", stackaddr).c_str());
+        if(Script::Memory::IsValidPtr(asmaddr))
+            DbgCmdExecDirect(StringUtils::sprintf("disasm 0x%p", asmaddr).c_str());
+    }
+
+    GuiShowCpu();
+    if((mode & CPU_ASMFOCUS) == CPU_ASMFOCUS)
+        GuiFocusView(GUI_DISASSEMBLY);
+    else if((mode & CPU_ASMFOCUS) == CPU_ASMFOCUS)
+        GuiFocusView(GUI_DUMP);
+    else if((mode & CPU_ASMFOCUS) == CPU_ASMFOCUS)
+        GuiFocusView(GUI_STACK);
+}
 
 extc void cdecl Setdisasm(ulong asmaddr, ulong selsize, int mode) { ulog(__FUNCTION__, p(asmaddr), p(selsize), p(mode)) }
 
