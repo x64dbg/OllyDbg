@@ -17,6 +17,23 @@ EXPORT int _ODBG_Plugindata(char* shortname)
 EXPORT int _ODBG_Plugininit(int ollydbgversion, HWND hw, ulong* features)
 {
     oprintf("%s(%d, %X, %p)\n", __FUNCTION__, ollydbgversion, hw, features);
+
+    //real fix goes here
+    __try
+    {
+        DWORD old;
+        auto addr = (void*)0x4311C2;
+        if(*(int*)addr == 0x8F831174)
+        {
+            oputs("OllyWow64 v0.2 by waleedassar");
+            VirtualProtect(addr, 0x1, PAGE_EXECUTE_READWRITE, &old);
+            *(unsigned char*)addr = 0xEB;
+            VirtualProtect(addr, 0x1, old, &old);
+        }
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER)
+    {
+    }
     return 0;
 }
 
