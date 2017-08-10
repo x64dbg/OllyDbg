@@ -62,6 +62,8 @@ extern int hMenuDisasm;
 extern int hMenuDump;
 extern int hMenuStack;
 
+std::string sectionFromHinst(HINSTANCE dllinst);
+
 //plugin data
 #define PLUGIN_NAME "OllyDbg"
 #define PLUGIN_VERSION 110

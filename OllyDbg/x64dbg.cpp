@@ -16,6 +16,7 @@ static HINSTANCE hInstMain;
 static int hEntryPool = 100;
 struct OllyPlugin;
 static std::unordered_map<int, std::tuple<OllyPlugin*, int, int>> menuActionMap; //x64dbg hMenuEntry -> plugin + action + origin
+static std::unordered_map<HINSTANCE, OllyPlugin*> hinstPluginMap;
 
 static void eventReg(CBTYPE cbType)
 {
@@ -217,10 +218,13 @@ struct OllyPlugin
             return false;
         }
 
+        hinstPluginMap[hInst] = this;
+
         auto version = ODBG_Plugindata(shortname);
         if(version < 106 || version > 110)
         {
             dprintf("_ODBG_Plugindata returned incompatible version: %d\n", version);
+            hinstPluginMap.erase(hInst);
             FreeLibrary(hInst);
             return false;
         }
@@ -228,6 +232,7 @@ struct OllyPlugin
         if(ODBG_Plugininit(ODBG_PLUGIN_VERSION, GuiGetWindowHandle(), nullptr) == -1)
         {
             dprintf("_ODBG_Plugininit failed...\n");
+            hinstPluginMap.erase(hInst);
             FreeLibrary(hInst);
             return false;
         }
@@ -393,6 +398,17 @@ struct OllyPlugin
 };
 
 static std::vector<OllyPlugin> ollyPlugins;
+
+std::string sectionFromHinst(HINSTANCE dllinst)
+{
+    auto found = hinstPluginMap.find(dllinst);
+    if(found == hinstPluginMap.end())
+    {
+        __debugbreak();
+        return "OllyDbgPlugins";
+    }
+    return std::string("OllyDbg:") + found->second->shortname;
+}
 
 static void loadPlugins()
 {

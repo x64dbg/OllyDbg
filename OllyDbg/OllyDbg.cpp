@@ -570,13 +570,35 @@ extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dl
 
 extc void cdecl Unregisterpluginclass(char* classname) { ulog(__FUNCTION__, p(classname)) }
 
-extc int cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value) { ulog(__FUNCTION__, p(dllinst), p(key), p(value)) return 0; }
+extc int cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value)
+{
+    plog(__FUNCTION__, p(dllinst), p(key), p(value));
+    return BridgeSettingSetUint(sectionFromHinst(dllinst).c_str(), key, value) ? 1 : 0;
+}
 
-extc int cdecl Pluginwritestringtoini(HINSTANCE dllinst, char* key, char* s) { ulog(__FUNCTION__, p(dllinst), p(key), p(s)) return 0; }
+extc int cdecl Pluginwritestringtoini(HINSTANCE dllinst, char* key, char* s)
+{
+    plog(__FUNCTION__, p(dllinst), p(key), p(s));
+    return BridgeSettingSet(sectionFromHinst(dllinst).c_str(), key, s) ? 1 : 0;
+    return 0;
+}
 
-extc int cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def) { ulog(__FUNCTION__, p(dllinst), p(key), p(def)) return 0; }
+extc int cdecl Pluginreadintfromini(HINSTANCE dllinst, char* key, int def)
+{
+    plog(__FUNCTION__, p(dllinst), p(key), p(def));
+    duint setting = 0;
+    if(!BridgeSettingGetUint(sectionFromHinst(dllinst).c_str(), key, &setting))
+        setting = def;
+    return setting;
+}
 
-extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def) { ulog(__FUNCTION__, p(dllinst), p(key), p(s), p(def)) return 0; }
+extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, char* def)
+{
+    plog(__FUNCTION__, p(dllinst), p(key), p(s), p(def));
+    if(!BridgeSettingGet(sectionFromHinst(dllinst).c_str(), key, s))
+        strcpy_s(s, TEXTLEN, def);
+    return strlen(s);
+}
 
 extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data) { ulog(__FUNCTION__, p(tag), p(size), p(data)) return 0; }
 
