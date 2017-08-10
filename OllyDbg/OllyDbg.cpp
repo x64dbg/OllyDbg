@@ -324,15 +324,47 @@ extc void cdecl Restoreallthreads() { ulog(__FUNCTION__) }
 /////////////////////////////// MEMORY FUNCTIONS ///////////////////////////////
 extc int cdecl Listmemory() { ulog(__FUNCTION__) return 0; }
 
-extc t_memory* cdecl Findmemory(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
+extc t_memory* cdecl Findmemory(ulong addr)
+{
+    plog(__FUNCTION__, p(addr));
+
+    //TODO: not all fields are implemented
+    static t_memory mem;
+    memset(&mem, 0, sizeof(mem));
+    duint size;
+    duint base = DbgMemFindBaseAddr(addr, &size);
+    if(!base)
+        return 0;
+    mem.owner = mem.base = base;
+    mem.size = size;
+    mem.type = TY_CODE; //TODO: find something proper
+    mem.access = mem.initaccess = Script::Memory::GetProtect(base);
+    return &mem;
+}
 
 extc int cdecl Guardmemory(ulong base, ulong size, int guard) { ulog(__FUNCTION__, p(base), p(size), p(guard)) return 0; }
 
 extc void cdecl Havecopyofmemory(uchar* copy, ulong base, ulong size) { ulog(__FUNCTION__, p(copy), p(base), p(size)) }
 
-extc ulong cdecl Readmemory(void* buf, ulong addr, ulong size, int mode) { ulog(__FUNCTION__, p(buf), p(addr), p(size), p(mode)) return 0; }
+extc ulong cdecl Readmemory(void* buf, ulong addr, ulong size, int mode)
+{
+    plog(__FUNCTION__, p(buf), p(addr), p(size), p(mode));
 
-extc ulong cdecl Writememory(void* buf, ulong addr, ulong size, int mode) { ulog(__FUNCTION__, p(buf), p(addr), p(size), p(mode)) return 0; }
+    //TODO: implement mode:MM_RESTORE
+    duint sizeRead = 0;
+    Script::Memory::Read(addr, buf, size, &sizeRead);
+    return sizeRead;
+}
+
+extc ulong cdecl Writememory(void* buf, ulong addr, ulong size, int mode)
+{
+    ulog(__FUNCTION__, p(buf), p(addr), p(size), p(mode));
+
+    //TODO: implement mode:MM_RESTORE and MM_DELANAL
+    duint sizeWritten = 0;
+    Script::Memory::Write(addr, buf, size, &sizeWritten);
+    return sizeWritten;
+}
 
 extc ulong cdecl Readcommand(ulong ip, char* cmd) { ulog(__FUNCTION__, p(ip), p(cmd)) return 0; }
 
