@@ -608,11 +608,9 @@ extc int cdecl Plugingetvalue(int type)
     switch(type)
     {
     case VAL_HINST: // Current program instance
-        oputs("UNIMPLEMENTED: VAL_HINST");
-        break;
+        return int(hInstMain);
     case VAL_HWMAIN: // Handle of the main window
-        oputs("UNIMPLEMENTED: VAL_HWMAIN");
-        break;
+        return int(hwndOlly);
     case VAL_HWCLIENT: // Handle of the MDI client window
         oputs("UNIMPLEMENTED: VAL_HWCLIENT");
         break;

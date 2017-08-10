@@ -5,18 +5,78 @@
 #include "stringutils.h"
 #include <unordered_map>
 
+HINSTANCE hInstMain;
 int pluginHandle;
 HWND hwndDlg;
 int hMenu;
 int hMenuDisasm;
 int hMenuDump;
 int hMenuStack;
+HWND hwndOlly;
 
-static HINSTANCE hInstMain;
 static int hEntryPool = 100;
 struct OllyPlugin;
 static std::unordered_map<int, std::tuple<OllyPlugin*, int, int>> menuActionMap; //x64dbg hMenuEntry -> plugin + action + origin
 static std::unordered_map<HINSTANCE, OllyPlugin*> hinstPluginMap;
+static HANDLE hEventOlly;
+
+static void createOllyWindow()
+{
+    hEventOlly = CreateEventW(nullptr, FALSE, TRUE, nullptr);
+    CloseHandle(CreateThread(nullptr, 0, [](void*) -> DWORD
+    {
+        // Register the window class.
+        const wchar_t CLASS_NAME[] = L"OllyDbg Window Class";
+        WNDCLASSW wc = {};
+        wc.hInstance = hInstMain;
+        wc.lpszClassName = CLASS_NAME;
+        wc.lpfnWndProc = [](HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> LRESULT
+        {
+            switch(uMsg)
+            {
+            case WM_DESTROY:
+                PostQuitMessage(0);
+                return 0;
+            }
+            return DefWindowProcW(hwnd, uMsg, wParam, lParam);
+        };
+
+        RegisterClassW(&wc);
+
+        // Create the window.
+        HWND hwnd = hwndOlly = CreateWindowExW(
+                                   0, // Optional window styles.
+                                   CLASS_NAME, // Window class
+                                   L"OllyDbg", // Window text
+                                   WS_OVERLAPPEDWINDOW, // Window style
+                                   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, // Size and position
+                                   NULL, // Parent window
+                                   NULL, // Menu
+                                   hInstMain, // Instance handle
+                                   NULL // Additional application data
+                               );
+        SetEvent(hEventOlly);
+        if(hwnd == NULL)
+        {
+            __debugbreak();
+            return 0;
+        }
+
+        //ShowWindow(hwnd, SW_SHOW);
+
+        // Run the message loop.
+        MSG msg = {};
+        while(GetMessage(&msg, NULL, 0, 0))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        return 0;
+    }, nullptr, 0, nullptr));
+    WaitForSingleObject(hEventOlly, INFINITE);
+    CloseHandle(hEventOlly);
+}
 
 static void eventReg(CBTYPE cbType)
 {
@@ -229,7 +289,7 @@ struct OllyPlugin
             return false;
         }
 
-        if(ODBG_Plugininit(ODBG_PLUGIN_VERSION, GuiGetWindowHandle(), nullptr) == -1)
+        if(ODBG_Plugininit(ODBG_PLUGIN_VERSION, hwndOlly, nullptr) == -1)
         {
             dprintf("_ODBG_Plugininit failed...\n");
             hinstPluginMap.erase(hInst);
@@ -457,6 +517,7 @@ static void saveConsole()
 PLUG_EXPORT bool pluginit(PLUG_INITSTRUCT* initStruct)
 {
     loadConsole();
+    createOllyWindow();
 
     initStruct->pluginVersion = PLUGIN_VERSION;
     initStruct->sdkVersion = PLUG_SDKVERSION;
@@ -476,6 +537,7 @@ PLUG_EXPORT bool plugstop()
         if(plugin.ODBG_Plugindestroy)
             plugin.ODBG_Plugindestroy();
     saveConsole();
+    CloseWindow(hwndOlly);
     return true;
 }
 
