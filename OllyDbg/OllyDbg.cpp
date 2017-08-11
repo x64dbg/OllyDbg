@@ -385,22 +385,8 @@ extc t_module* cdecl Findmodule(ulong addr)
 {
     plog(__FUNCTION__, p(addr));
 
-    Script::Module::ModuleInfo info;
-    if(!Script::Module::InfoFromAddr(addr, &info))
-        return 0;
-
-    //TODO: not all fields are populated
     static t_module mod;
-    memset(&mod, 0, sizeof(mod));
-
-    mod.base = info.base;
-    mod.size = info.size;
-    mod.entry = info.entry;
-    strcpy_s(mod.path, info.path);
-    mod.nsect = info.sectionCount;
-    mod.issystemdll = DbgFunctions()->ModGetParty(info.base) == 1;
-
-    return &mod;
+    return ollyModFromAddr(addr, &mod) ? &mod : 0;
 }
 
 extc t_fixup* cdecl Findfixup(t_module* pmod, ulong addr) { ulog(__FUNCTION__, p(pmod), p(addr)) return 0; }
@@ -667,8 +653,6 @@ extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, ch
     }
     return strlen(s);
 }
-
-extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data) { ulog(__FUNCTION__, p(tag), p(size), p(data)) return 0; }
 
 extc int cdecl Plugingetvalue(int type)
 {

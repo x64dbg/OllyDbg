@@ -59,6 +59,8 @@ extern HINSTANCE hInstMain;
 extern HWND hwndOlly;
 
 std::string sectionFromHinst(HINSTANCE dllinst);
+struct t_module;
+bool ollyModFromAddr(duint addr, t_module* mod);
 
 //plugin data
 #define PLUGIN_NAME "OllyDbg"

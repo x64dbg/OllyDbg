@@ -4,6 +4,7 @@
 #include "loghacks.h"
 #include "stringutils.h"
 #include <unordered_map>
+#include <map>
 
 HINSTANCE hInstMain;
 int pluginHandle;
@@ -688,8 +689,23 @@ struct UddEntry
     std::vector<uchar> data;
 };
 
-static t_module* currentUddModule = nullptr;
-static std::unordered_map<std::string, std::vector<UddEntry>> uddEntryMap;
+static std::string currentUddModule;
+static std::map<std::string, std::vector<UddEntry>> uddEntryMap;
+static std::unordered_set<duint> modulesLoaded;
+
+extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data)
+{
+    plog(__FUNCTION__, p(tag), p(size), p(data));
+
+    if(currentUddModule.empty() || size > USERLEN)
+        return 0;
+    UddEntry entry;
+    entry.tag = tag;
+    entry.data.resize(size);
+    memcpy(entry.data.data(), data, size);
+    uddEntryMap[currentUddModule].push_back(std::move(entry));
+    return 1;
+}
 
 static void modLoad(duint base, bool ismainmodule)
 {
@@ -698,6 +714,8 @@ static void modLoad(duint base, bool ismainmodule)
         return;
     char modname[MAX_MODULE_SIZE];
     if(!Script::Module::NameFromAddr(base, modname))
+        __debugbreak();
+    if(!modulesLoaded.insert(base).second)
         __debugbreak();
     auto found = uddEntryMap.find(modname);
     if(found != uddEntryMap.end())
@@ -708,25 +726,21 @@ static void modLoad(duint base, bool ismainmodule)
                         break;
 }
 
-extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data)
-{
-    ulog(__FUNCTION__, p(tag), p(size), p(data));
-
-    if(!currentUddModule)
-        __debugbreak();
-    return 0;
-}
-
 static void modUnload(duint base, bool ismainmodule)
 {
     static t_module uddMod;
     if(!ollyModFromAddr(base, &uddMod))
         return;
-    currentUddModule = &uddMod;
+    char modname[MAX_MODULE_SIZE];
+    if(!Script::Module::NameFromAddr(base, modname))
+        __debugbreak();
+    currentUddModule = modname;
     for(auto & plugin : ollyPlugins)
         if(plugin.ODBG_Pluginsaveudd)
             plugin.ODBG_Pluginsaveudd(&uddMod, ismainmodule);
-    currentUddModule = nullptr;
+    currentUddModule.clear();
+    if(!modulesLoaded.erase(base))
+        __debugbreak();
 }
 
 PLUG_EXPORT void CBCREATEPROCESS(CBTYPE, PLUG_CB_CREATEPROCESS* info)
@@ -736,7 +750,10 @@ PLUG_EXPORT void CBCREATEPROCESS(CBTYPE, PLUG_CB_CREATEPROCESS* info)
 
 PLUG_EXPORT void CBEXITPROCESS(CBTYPE, PLUG_CB_EXITPROCESS* info)
 {
-    modUnload(Script::Module::GetMainModuleBase(), true);
+    auto mainbase = Script::Module::GetMainModuleBase();
+    for(auto & modbase : modulesLoaded)
+        modUnload(modbase, modbase == mainbase);
+    modulesLoaded.clear();
 }
 
 PLUG_EXPORT void CBLOADDLL(CBTYPE, PLUG_CB_LOADDLL* info)
@@ -751,28 +768,44 @@ PLUG_EXPORT void CBUNLOADDLL(CBTYPE, PLUG_CB_UNLOADDLL* info)
 
 PLUG_EXPORT void CBLOADDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
 {
-    auto jsonArray = json_object_get(info->root, PLUGIN_NAME);
+    auto tagModulesArray = json_object_get(info->root, PLUGIN_NAME "Tags");
     size_t i;
-    json_t* jsonValue;
+    json_t* tagModuleJson;
     uddEntryMap.clear();
-    json_array_foreach(jsonArray, i, jsonValue)
+    json_array_foreach(tagModulesArray, i, tagModuleJson)
     {
-        auto modJson = json_object_get(jsonValue, "mod");
-        auto tagJson = json_object_get(jsonValue, "tag");
-        auto dataJson = json_object_get(jsonValue, "data");
-        if(modJson && tagJson && dataJson)
+        auto modJson = json_object_get(tagModuleJson, "mod");
+        auto tagsArray = json_object_get(tagModuleJson, "tags");
+        size_t j;
+        json_t* tagJson;
+        if(modJson)
         {
             auto mod = json_string_value(modJson);
-            auto tag = json_integer_value(tagJson);
-            auto data = json_string_value(dataJson);
-            if(mod && data)
+            if(mod)
             {
-                UddEntry entry;
-                entry.tag = ulong(tag);
-                if(StringUtils::FromCompressedHex(data, entry.data))
-                    uddEntryMap[mod].push_back(entry);
-                else
-                    __debugbreak();
+                json_array_foreach(tagsArray, j, tagJson)
+                {
+                    auto valJson = json_object_get(tagJson, "val");
+                    auto dataJson = json_object_get(tagJson, "data");
+                    if(valJson && dataJson)
+                    {
+                        auto val = json_integer_value(valJson);
+                        auto data = json_string_value(dataJson);
+                        if(data)
+                        {
+                            UddEntry entry;
+                            entry.tag = ulong(val);
+                            if(StringUtils::FromCompressedHex(data, entry.data))
+                                uddEntryMap[mod].push_back(std::move(entry));
+                            else
+                                __debugbreak();
+                        }
+                        else
+                            __debugbreak();
+                    }
+                    else
+                        __debugbreak();
+                }
             }
             else
                 __debugbreak();
@@ -784,19 +817,23 @@ PLUG_EXPORT void CBLOADDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
 
 PLUG_EXPORT void CBSAVEDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
 {
-    auto jsonArray = json_array();
+    auto tagModulesArray = json_array();
     for(const auto & it : uddEntryMap)
     {
+        auto tagModuleJson = json_object();
+        json_object_set_new(tagModuleJson, "mod", json_string(it.first.c_str()));
+        auto tagsArray = json_array();
         for(const auto & entry : it.second)
         {
-            auto jsonValue = json_object();
-            json_object_set_new(jsonValue, "mod", json_string(it.first.c_str()));
-            json_object_set_new(jsonValue, "tag", json_integer(entry.tag));
-            json_object_set_new(jsonValue, "data", json_string(StringUtils::ToCompressedHex(entry.data.data(), entry.data.size()).c_str()));
-            json_array_append_new(jsonArray, jsonValue);
+            auto tagJson = json_object();
+            json_object_set_new(tagJson, "tag", json_integer(entry.tag));
+            json_object_set_new(tagJson, "data", json_string(StringUtils::ToCompressedHex(entry.data.data(), entry.data.size()).c_str()));
+            json_array_append_new(tagsArray, tagJson);
         }
+        json_object_set_new(tagModuleJson, "tags", tagsArray);
+        json_array_append_new(tagModulesArray, tagModuleJson);
     }
-    json_object_set_new(info->root, PLUGIN_NAME, jsonArray);
+    json_object_set_new(info->root, PLUGIN_NAME "Tags", tagModulesArray);
 }
 
 BOOL WINAPI DllMain(
