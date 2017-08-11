@@ -785,7 +785,7 @@ PLUG_EXPORT void CBLOADDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
             {
                 json_array_foreach(tagsArray, j, tagJson)
                 {
-                    auto valJson = json_object_get(tagJson, "val");
+                    auto valJson = json_object_get(tagJson, "tag");
                     auto dataJson = json_object_get(tagJson, "data");
                     if(valJson && dataJson)
                     {
@@ -820,6 +820,8 @@ PLUG_EXPORT void CBSAVEDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
     auto tagModulesArray = json_array();
     for(const auto & it : uddEntryMap)
     {
+        if(it.second.empty())
+            continue;
         auto tagModuleJson = json_object();
         json_object_set_new(tagModuleJson, "mod", json_string(it.first.c_str()));
         auto tagsArray = json_array();
