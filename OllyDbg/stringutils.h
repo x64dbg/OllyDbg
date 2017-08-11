@@ -65,8 +65,8 @@ public:
     static bool FromHex(const String & text, std::vector<unsigned char> & data, bool reverse = false);
     static String ToHex(unsigned long long value);
     static String ToHex(unsigned char* buffer, size_t size, bool reverse = false);
-    static String ToCompressedHex(unsigned char* buffer, size_t size);
-    static bool FromCompressedHex(const String & text, std::vector<unsigned char> & data);
+    static String ToCompressedHex(const void* buffer, size_t size);
+    static bool FromCompressedHex(const char* text, std::vector<unsigned char> & data);
 
     template<typename T>
     static String ToFloatingString(void* buffer)

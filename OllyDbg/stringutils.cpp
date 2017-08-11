@@ -483,7 +483,7 @@ String StringUtils::ToHex(unsigned char* buffer, size_t size, bool reverse)
     return result;
 }
 
-String StringUtils::ToCompressedHex(unsigned char* buffer, size_t size)
+String StringUtils::ToCompressedHex(const void* buffer, size_t size)
 {
     if(!size)
         return "";
@@ -492,10 +492,10 @@ String StringUtils::ToCompressedHex(unsigned char* buffer, size_t size)
     for(size_t i = 0; i < size;)
     {
         size_t repeat = 0;
-        auto lastCh = buffer[i];
+        auto lastCh = ((const unsigned char*)buffer)[i];
         result.push_back(HEXLOOKUP[(lastCh >> 4) & 0xF]);
         result.push_back(HEXLOOKUP[lastCh & 0xF]);
-        for(; i < size && buffer[i] == lastCh; i++)
+        for(; i < size && ((const unsigned char*)buffer)[i] == lastCh; i++)
             repeat++;
         if(repeat == 2)
         {
@@ -512,9 +512,9 @@ String StringUtils::ToCompressedHex(unsigned char* buffer, size_t size)
     return result;
 }
 
-bool StringUtils::FromCompressedHex(const String & text, std::vector<unsigned char> & data)
+bool StringUtils::FromCompressedHex(const char* text, std::vector<unsigned char> & data)
 {
-    auto size = text.size();
+    auto size = strlen(text);
     if(size < 2)
         return false;
     data.clear();
