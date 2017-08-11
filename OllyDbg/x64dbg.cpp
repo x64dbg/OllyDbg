@@ -260,6 +260,15 @@ struct OllyPlugin
             eventReg(CB_DEBUGEVENT);
         ODBG_Pluginsaveudd = p_ODBG_Pluginsaveudd(GetProcAddress(hInst, "_ODBG_Pluginsaveudd"));
         ODBG_Pluginuddrecord = p_ODBG_Pluginuddrecord(GetProcAddress(hInst, "_ODBG_Pluginuddrecord"));
+        if(ODBG_Pluginsaveudd || ODBG_Pluginuddrecord)
+        {
+            eventReg(CB_CREATEPROCESS);
+            eventReg(CB_EXITPROCESS);
+            eventReg(CB_LOADDLL);
+            eventReg(CB_UNLOADDLL);
+            eventReg(CB_LOADDB);
+            eventReg(CB_SAVEDB);
+        }
         if(ODBG_Pluginmenu = p_ODBG_Pluginmenu(GetProcAddress(hInst, "_ODBG_Pluginmenu")))
             eventReg(CB_MENUPREPARE);
         if(ODBG_Pluginaction = p_ODBG_Pluginaction(GetProcAddress(hInst, "_ODBG_Pluginaction")))
@@ -425,7 +434,9 @@ struct OllyPlugin
             switch(state)
             {
             case None:
-                if(ch == '#' || ch == '|')
+                if(ch == '}')
+                    menuStack.pop_back();
+                else if(ch == '#' || ch == '|')
                 {
                     if(!_plugin_menuaddseparator(hMenu()))
                         __debugbreak();
@@ -489,6 +500,23 @@ std::string sectionFromHinst(HINSTANCE dllinst)
     if(found->second.empty())
         __debugbreak();
     return StringUtils::sprintf("OllyDbg %s", found->second.c_str());
+}
+
+bool ollyModFromAddr(duint addr, t_module* mod)
+{
+    Script::Module::ModuleInfo info;
+    if(!Script::Module::InfoFromAddr(addr, &info))
+        return false;
+
+    //TODO: not all fields are populated
+    memset(mod, 0, sizeof(mod));
+    mod->base = info.base;
+    mod->size = info.size;
+    mod->entry = info.entry;
+    strcpy_s(mod->path, info.path);
+    mod->nsect = info.sectionCount;
+    mod->issystemdll = DbgFunctions()->ModGetParty(info.base) == 1;
+    return true;
 }
 
 static void loadPlugins()
@@ -652,6 +680,123 @@ PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
             }
         }
     }
+}
+
+struct UddEntry
+{
+    ulong tag;
+    std::vector<uchar> data;
+};
+
+static t_module* currentUddModule = nullptr;
+static std::unordered_map<std::string, std::vector<UddEntry>> uddEntryMap;
+
+static void modLoad(duint base, bool ismainmodule)
+{
+    static t_module uddMod;
+    if(!ollyModFromAddr(base, &uddMod))
+        return;
+    char modname[MAX_MODULE_SIZE];
+    if(!Script::Module::NameFromAddr(base, modname))
+        __debugbreak();
+    auto found = uddEntryMap.find(modname);
+    if(found != uddEntryMap.end())
+        for(auto & entry : found->second)
+            for(auto & plugin : ollyPlugins)
+                if(plugin.ODBG_Pluginuddrecord)
+                    if(plugin.ODBG_Pluginuddrecord(&uddMod, ismainmodule, entry.tag, entry.data.size(), entry.data.data()) != 0)
+                        break;
+}
+
+extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data)
+{
+    ulog(__FUNCTION__, p(tag), p(size), p(data));
+
+    if(!currentUddModule)
+        __debugbreak();
+    return 0;
+}
+
+static void modUnload(duint base, bool ismainmodule)
+{
+    static t_module uddMod;
+    if(!ollyModFromAddr(base, &uddMod))
+        return;
+    currentUddModule = &uddMod;
+    for(auto & plugin : ollyPlugins)
+        if(plugin.ODBG_Pluginsaveudd)
+            plugin.ODBG_Pluginsaveudd(&uddMod, ismainmodule);
+    currentUddModule = nullptr;
+}
+
+PLUG_EXPORT void CBCREATEPROCESS(CBTYPE, PLUG_CB_CREATEPROCESS* info)
+{
+    modLoad(duint(info->CreateProcessInfo->lpBaseOfImage), true);
+}
+
+PLUG_EXPORT void CBEXITPROCESS(CBTYPE, PLUG_CB_EXITPROCESS* info)
+{
+    modUnload(Script::Module::GetMainModuleBase(), true);
+}
+
+PLUG_EXPORT void CBLOADDLL(CBTYPE, PLUG_CB_LOADDLL* info)
+{
+    modLoad(duint(info->LoadDll->lpBaseOfDll), false);
+}
+
+PLUG_EXPORT void CBUNLOADDLL(CBTYPE, PLUG_CB_UNLOADDLL* info)
+{
+    modUnload(duint(info->UnloadDll->lpBaseOfDll), false);
+}
+
+PLUG_EXPORT void CBLOADDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
+{
+    auto jsonArray = json_object_get(info->root, PLUGIN_NAME);
+    size_t i;
+    json_t* jsonValue;
+    uddEntryMap.clear();
+    json_array_foreach(jsonArray, i, jsonValue)
+    {
+        auto modJson = json_object_get(jsonValue, "mod");
+        auto tagJson = json_object_get(jsonValue, "tag");
+        auto dataJson = json_object_get(jsonValue, "data");
+        if(modJson && tagJson && dataJson)
+        {
+            auto mod = json_string_value(modJson);
+            auto tag = json_integer_value(tagJson);
+            auto data = json_string_value(dataJson);
+            if(mod && data)
+            {
+                UddEntry entry;
+                entry.tag = ulong(tag);
+                if(StringUtils::FromCompressedHex(data, entry.data))
+                    uddEntryMap[mod].push_back(entry);
+                else
+                    __debugbreak();
+            }
+            else
+                __debugbreak();
+        }
+        else
+            __debugbreak();
+    }
+}
+
+PLUG_EXPORT void CBSAVEDB(CBTYPE, PLUG_CB_LOADSAVEDB* info)
+{
+    auto jsonArray = json_array();
+    for(const auto & it : uddEntryMap)
+    {
+        for(const auto & entry : it.second)
+        {
+            auto jsonValue = json_object();
+            json_object_set_new(jsonValue, "mod", json_string(it.first.c_str()));
+            json_object_set_new(jsonValue, "tag", json_integer(entry.tag));
+            json_object_set_new(jsonValue, "data", json_string(StringUtils::ToCompressedHex(entry.data.data(), entry.data.size()).c_str()));
+            json_array_append_new(jsonArray, jsonValue);
+        }
+    }
+    json_object_set_new(info->root, PLUGIN_NAME, jsonArray);
 }
 
 BOOL WINAPI DllMain(
