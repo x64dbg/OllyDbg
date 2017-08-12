@@ -28,6 +28,9 @@
 #include "pluginsdk/XEDParse/XEDParse.h"
 #include "pluginsdk/yara/yara.h"
 
+#include "HackyPeParser.h"
+#include <unordered_map>
+
 #ifdef _WIN64
 #pragma comment(lib, "pluginsdk/x64dbg.lib")
 #pragma comment(lib, "pluginsdk/x64bridge.lib")
@@ -57,6 +60,7 @@
 //superglobal variables
 extern HINSTANCE hInstMain;
 extern HWND hwndOlly;
+extern std::unordered_map<duint, PeData> modulesLoaded;
 
 std::string sectionFromHinst(HINSTANCE dllinst);
 struct t_module;

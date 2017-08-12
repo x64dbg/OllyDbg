@@ -263,10 +263,6 @@ struct OllyPlugin
         ODBG_Pluginuddrecord = p_ODBG_Pluginuddrecord(GetProcAddress(hInst, "_ODBG_Pluginuddrecord"));
         if(ODBG_Pluginsaveudd || ODBG_Pluginuddrecord)
         {
-            eventReg(CB_CREATEPROCESS);
-            eventReg(CB_EXITPROCESS);
-            eventReg(CB_LOADDLL);
-            eventReg(CB_UNLOADDLL);
             eventReg(CB_LOADDB);
             eventReg(CB_SAVEDB);
         }
@@ -569,6 +565,11 @@ PLUG_EXPORT bool pluginit(PLUG_INITSTRUCT* initStruct)
     loadConsole();
     createOllyWindow();
 
+    eventReg(CB_CREATEPROCESS);
+    eventReg(CB_EXITPROCESS);
+    eventReg(CB_LOADDLL);
+    eventReg(CB_UNLOADDLL);
+
     initStruct->pluginVersion = PLUGIN_VERSION;
     initStruct->sdkVersion = PLUG_SDKVERSION;
     strncpy_s(initStruct->pluginName, PLUGIN_NAME, _TRUNCATE);
@@ -691,7 +692,7 @@ struct UddEntry
 
 static std::string currentUddModule;
 static std::map<std::string, std::vector<UddEntry>> uddEntryMap;
-static std::unordered_set<duint> modulesLoaded;
+std::unordered_map<duint, PeData> modulesLoaded;
 
 extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data)
 {
@@ -715,7 +716,14 @@ static void modLoad(duint base, bool ismainmodule)
     char modname[MAX_MODULE_SIZE];
     if(!Script::Module::NameFromAddr(base, modname))
         __debugbreak();
-    if(!modulesLoaded.insert(base).second)
+    char modpath[MAX_PATH];
+    PeData peData;
+    if(Script::Module::PathFromAddr(base, modpath))
+    {
+        HackyParsePe(StringUtils::Utf8ToUtf16(modpath).c_str(), peData);
+        oprintf("\"%s\".codebase: %p\n", modname, peData.codebase);
+    }
+    if(!modulesLoaded.insert({ base, peData }).second)
         __debugbreak();
     auto found = uddEntryMap.find(modname);
     if(found != uddEntryMap.end())
@@ -751,8 +759,8 @@ PLUG_EXPORT void CBCREATEPROCESS(CBTYPE, PLUG_CB_CREATEPROCESS* info)
 PLUG_EXPORT void CBEXITPROCESS(CBTYPE, PLUG_CB_EXITPROCESS* info)
 {
     auto mainbase = Script::Module::GetMainModuleBase();
-    for(auto & modbase : modulesLoaded)
-        modUnload(modbase, modbase == mainbase);
+    for(auto & mod : modulesLoaded)
+        modUnload(mod.first, mod.first == mainbase);
     modulesLoaded.clear();
 }
 
