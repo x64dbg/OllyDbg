@@ -86,12 +86,14 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/J %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="HackyPeParser.cpp" />
     <ClCompile Include="OllyDbg.cpp" />
     <ClCompile Include="stringutils.cpp" />
     <ClCompile Include="x64dbg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="disasm\disasm.h" />
+    <ClInclude Include="HackyPeParser.h" />
     <ClInclude Include="loghacks.h" />
     <ClInclude Include="OllyDbg.h" />
     <ClInclude Include="oprintf.h" />

@@ -38,6 +38,9 @@
     <ClCompile Include="disasm\disasm.c">
       <Filter>Source Files\disasm</Filter>
     </ClCompile>
+    <ClCompile Include="HackyPeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OllyDbg.h">
@@ -126,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="disasm\disasm.h">
       <Filter>Header Files\disasm</Filter>
+    </ClInclude>
+    <ClInclude Include="HackyPeParser.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
