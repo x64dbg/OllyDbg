@@ -508,20 +508,15 @@ bool ollyModFromAddr(duint addr, t_module* mod)
 
     //TODO: not all fields are populated
 	memset(mod, 0, sizeof(mod));
-
-	PeData pe_data;
-	wchar_t retChar[MAX_PATH];
-	size_t cov;
-	mbstowcs_s(&cov, retChar, info.path, MAX_PATH);
-	HackyParsePe(retChar, pe_data);
+	auto found = modulesLoaded.find(info.base);
 
     mod->base = info.base;
     mod->size = info.size;
     mod->entry = info.entry;
-	mod->codebase = pe_data.codebase;
-	mod->codesize = pe_data.codesize;
-	mod->resbase = pe_data.resbase;
-	mod->ressize = pe_data.ressize;
+	mod->codebase = found->second.codebase + info.base;
+	mod->codesize = found->second.codesize;
+	mod->resbase = found->second.resbase + info.base;
+	mod->ressize = found->second.ressize;
     strcpy_s(mod->path, info.path);
 	strncpy_s(mod->name, info.name, sizeof(mod->name) - 1);
     mod->nsect = info.sectionCount;
