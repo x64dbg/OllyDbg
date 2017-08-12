@@ -2,7 +2,7 @@
 
 void HackyParsePe(const wchar_t* szFileName, PeData & data)
 {
-    memset(&data, 0, sizeof(data));
+    data = PeData();
     auto hFile = CreateFileW(szFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
     if(hFile != INVALID_HANDLE_VALUE)
     {
@@ -26,6 +26,7 @@ void HackyParsePe(const wchar_t* szFileName, PeData & data)
                             if(Machine == IMAGE_FILE_MACHINE_I386)
                             {
                                 // NOTE: try to access fields in the order they appear in memory (just in case the header is cut off)
+                                data.appearsToBeValid = true;
                                 data.isDll = (pnth->FileHeader.Characteristics & IMAGE_FILE_DLL) == IMAGE_FILE_DLL;
                                 data.imagebase = pnth->OptionalHeader.ImageBase;
                                 data.codebase = pnth->OptionalHeader.BaseOfCode;
