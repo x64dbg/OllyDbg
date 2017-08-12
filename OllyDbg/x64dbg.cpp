@@ -2,6 +2,7 @@
 #define _CHAR_UNSIGNED //TODO: this is probably harmful for the implementation of certain functions
 #include "OllyDbg.h"
 #include "loghacks.h"
+#include "HackyPeParser.h"
 #include "stringutils.h"
 #include <unordered_map>
 #include <map>
@@ -505,18 +506,31 @@ std::string sectionFromHinst(HINSTANCE dllinst)
 
 bool ollyModFromAddr(duint addr, t_module* mod)
 {
-    Script::Module::ModuleInfo info;
+	Script::Module::ModuleInfo info;
     if(!Script::Module::InfoFromAddr(addr, &info))
         return false;
 
     //TODO: not all fields are populated
-    memset(mod, 0, sizeof(mod));
+	memset(mod, 0, sizeof(mod));
+
+	PeData pe_data;
+	wchar_t retChar[MAX_PATH];
+	size_t cov;
+	mbstowcs_s(&cov, retChar, info.path, MAX_PATH);
+	HackyParsePe(retChar, pe_data);
+
     mod->base = info.base;
     mod->size = info.size;
     mod->entry = info.entry;
+	mod->codebase = pe_data.codebase;
+	mod->codesize = pe_data.codesize;
+	mod->resbase = pe_data.resbase;
+	mod->ressize = pe_data.ressize;
     strcpy_s(mod->path, info.path);
+	strncpy_s(mod->name, info.name, sizeof(mod->name) - 1);
     mod->nsect = info.sectionCount;
     mod->issystemdll = DbgFunctions()->ModGetParty(info.base) == 1;
+
     return true;
 }
 
