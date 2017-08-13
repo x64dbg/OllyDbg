@@ -5,16 +5,7 @@
 #include <stdarg.h>
 #include "loghacks.h"
 #include "stringutils.h"
-using namespace std;
-
-// Global  names table
-using NameKey = pair < duint, int > ;
-struct TableHash {
-	size_t operator()(const std::pair<duint, char>& p) const {
-		return p.first ^ p.second;
-	}
-};
-unordered_map<NameKey, string, TableHash> names_table;
+#include <map>
 
 //NOTE: SEG_XXX are overloaded. The OllyDbg ones are renamed to ODBG_SEG_XXX
 
@@ -242,31 +233,31 @@ getarguments - mode of operation.Modes 3 to 8 are not intended for use in plugin
 New in version 1.10: if mode is ORed with 0x80, Browsefilename opens Save File dialog instead of Open File.
 */
 {
-	OPENFILENAME ofn;
+    OPENFILENAME ofn;
 
-	plog(__FUNCTION__, p(title), p(name), p(defext), p(getarguments));
-	if (getarguments > 0)
-		oputs("UNIMPLEMENTED: mode value");
+    plog(__FUNCTION__, p(title), p(name), p(defext), p(getarguments));
+    if(getarguments > 0)
+        oputs("UNIMPLEMENTED: mode value");
 
-	// Zero out name so that GetOpenFileName does
-	// not use the contents to initialize itself and hence fail
-	ZeroMemory(name, sizeof(MAX_PATH));
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    // Zero out name so that GetOpenFileName does
+    // not use the contents to initialize itself and hence fail
+    ZeroMemory(name, sizeof(MAX_PATH));
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = GuiGetWindowHandle();
-	ofn.lpstrFile = name;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrTitle = title;
-	ofn.lpstrFilter = defext;
-	ofn.lpstrDefExt = defext;
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = GuiGetWindowHandle();
+    ofn.lpstrFile = name;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrTitle = title;
+    ofn.lpstrFilter = defext;
+    ofn.lpstrDefExt = defext;
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-	return (int)(FALSE != GetOpenFileName(&ofn));
+    return (int)(FALSE != GetOpenFileName(&ofn));
 }
 
 extc int cdecl OpenEXEfile(char* path, int dropped) { ulog(__FUNCTION__, p(path), p(dropped)) return 0; }
@@ -313,141 +304,148 @@ extc void cdecl Selectandscroll(t_table* pt, int index, int mode) { ulog(__FUNCT
 //////////////////////////////// NAME FUNCTIONS ////////////////////////////////
 extc int cdecl Insertname(ulong addr, int type, char* name)
 {
-	plog(__FUNCTION__, p(addr), p(type), p(name));
-	switch (type)
-	{
-	case NM_NONAME:
-		oputs("UNIMPLEMENTED: NM_NONAME");
-		break;
-	case NM_ANYNAME:
-		oputs("UNIMPLEMENTED: NM_ANYNAME");
-		break;
-	case NM_PLUGCMD:
-		oputs("UNIMPLEMENTED: NM_PLUGCMD");
-		break;
-	case NM_LABEL:
-		DbgSetLabelAt(addr, name);
-		break;
-	case NM_EXPORT:
-		oputs("UNIMPLEMENTED: NM_EXPORT");
-		break;
-	case NM_IMPORT:
-		oputs("UNIMPLEMENTED: NM_IMPORT");
-		break;
-	case NM_LIBRARY:
-		oputs("UNIMPLEMENTED: NM_LIBRARY");
-		break;
-	case NM_CONST:
-		oputs("UNIMPLEMENTED: NM_CONST");
-		break;
-	case NM_COMMENT:
-		DbgSetCommentAt(addr, name);
-		break;
-	case NM_LIBCOMM:
-		oputs("UNIMPLEMENTED: NM_LIBCOMM");
-		break;
-	case NM_BREAK:
-		oputs("UNIMPLEMENTED: NM_BREAK");
-		break;
-	case NM_ARG:
-		oputs("UNIMPLEMENTED: NM_ARG");
-		break;
-	case NM_ANALYSE:
-		oputs("UNIMPLEMENTED: NM_ANALYSE");
-		break;
-	case NM_BREAKEXPR:
-		oputs("UNIMPLEMENTED: NM_BREAKEXPR");
-		break;
-	case NM_BREAKEXPL:
-		oputs("UNIMPLEMENTED: NM_BREAKEXPL");
-		break;
-	case NM_ASSUME:
-		oputs("UNIMPLEMENTED: NM_ASSUME");
-		break;
-	case NM_STRUCT:
-		oputs("UNIMPLEMENTED: NM_STRUCT");
-		break;
-	case NM_CASE:
-		oputs("UNIMPLEMENTED: NM_CASE");
-		break;
-	case NM_INSPECT:
-		oputs("UNIMPLEMENTED: NM_INSPECT");
-		break;
-	case NM_WATCH:
-		oputs("UNIMPLEMENTED: NM_WATCH");
-		break;
-	case NM_ASM:
-		oputs("UNIMPLEMENTED: NM_ASM");
-		break;
-	case NM_FINDASM:
-		oputs("UNIMPLEMENTED: NM_FINDASM");
-		break;
-	case NM_LASTWATCH:
-		oputs("UNIMPLEMENTED: NM_LASTWATCH");
-		break;
-	case NM_SOURCE:
-		oputs("UNIMPLEMENTED: NM_SOURCE");
-		break;
-	case NM_REFTXT:
-		oputs("UNIMPLEMENTED: NM_REFTXT");
-		break;
-	case NM_GOTO:
-		oputs("UNIMPLEMENTED: NM_GOTO");
-		break;
-	case NM_GOTODUMP:
-		oputs("UNIMPLEMENTED: NM_GOTODUMP");
-		break;
-	case NM_TRPAUSE:
-		oputs("UNIMPLEMENTED: NM_TRPAUSE");
-		break;
-	case NM_IMCALL:
-		oputs("UNIMPLEMENTED: NM_IMCALL");
-		break;
-		//case NMHISTORY:
-		//oputs("UNIMPLEMENTED: NMHISTORY");
-		//break;
-	default:
-		break;
-	}
+    plog(__FUNCTION__, p(addr), p(type), p(name));
+    switch(type)
+    {
+    case NM_NONAME:
+        oputs("UNIMPLEMENTED: NM_NONAME");
+        break;
+    case NM_ANYNAME:
+        oputs("UNIMPLEMENTED: NM_ANYNAME");
+        break;
+    case NM_PLUGCMD:
+        oputs("UNIMPLEMENTED: NM_PLUGCMD");
+        break;
+    case NM_LABEL:
+        DbgSetLabelAt(addr, name);
+        break;
+    case NM_EXPORT:
+        oputs("UNIMPLEMENTED: NM_EXPORT");
+        break;
+    case NM_IMPORT:
+        oputs("UNIMPLEMENTED: NM_IMPORT");
+        break;
+    case NM_LIBRARY:
+        oputs("UNIMPLEMENTED: NM_LIBRARY");
+        break;
+    case NM_CONST:
+        oputs("UNIMPLEMENTED: NM_CONST");
+        break;
+    case NM_COMMENT:
+        DbgSetCommentAt(addr, name);
+        break;
+    case NM_LIBCOMM:
+        oputs("UNIMPLEMENTED: NM_LIBCOMM");
+        break;
+    case NM_BREAK:
+        oputs("UNIMPLEMENTED: NM_BREAK");
+        break;
+    case NM_ARG:
+        oputs("UNIMPLEMENTED: NM_ARG");
+        break;
+    case NM_ANALYSE:
+        oputs("UNIMPLEMENTED: NM_ANALYSE");
+        break;
+    case NM_BREAKEXPR:
+        oputs("UNIMPLEMENTED: NM_BREAKEXPR");
+        break;
+    case NM_BREAKEXPL:
+        oputs("UNIMPLEMENTED: NM_BREAKEXPL");
+        break;
+    case NM_ASSUME:
+        oputs("UNIMPLEMENTED: NM_ASSUME");
+        break;
+    case NM_STRUCT:
+        oputs("UNIMPLEMENTED: NM_STRUCT");
+        break;
+    case NM_CASE:
+        oputs("UNIMPLEMENTED: NM_CASE");
+        break;
+    case NM_INSPECT:
+        oputs("UNIMPLEMENTED: NM_INSPECT");
+        break;
+    case NM_WATCH:
+        oputs("UNIMPLEMENTED: NM_WATCH");
+        break;
+    case NM_ASM:
+        oputs("UNIMPLEMENTED: NM_ASM");
+        break;
+    case NM_FINDASM:
+        oputs("UNIMPLEMENTED: NM_FINDASM");
+        break;
+    case NM_LASTWATCH:
+        oputs("UNIMPLEMENTED: NM_LASTWATCH");
+        break;
+    case NM_SOURCE:
+        oputs("UNIMPLEMENTED: NM_SOURCE");
+        break;
+    case NM_REFTXT:
+        oputs("UNIMPLEMENTED: NM_REFTXT");
+        break;
+    case NM_GOTO:
+        oputs("UNIMPLEMENTED: NM_GOTO");
+        break;
+    case NM_GOTODUMP:
+        oputs("UNIMPLEMENTED: NM_GOTODUMP");
+        break;
+    case NM_TRPAUSE:
+        oputs("UNIMPLEMENTED: NM_TRPAUSE");
+        break;
+    case NM_IMCALL:
+        oputs("UNIMPLEMENTED: NM_IMCALL");
+        break;
+    //case NMHISTORY:
+    //oputs("UNIMPLEMENTED: NMHISTORY");
+    //break;
+    default:
+        break;
+    }
 
-	GuiUpdateAllViews();
-	return 0;
+    GuiUpdateAllViews();
+    return 0;
 }
+
+// Quick names table
+static std::map<std::pair<int, duint>, std::string> quickNames;
 
 extc int cdecl Quickinsertname(ulong addr, int type, char* name)
 {
-	plog(__FUNCTION__, p(addr), p(type), p(name));
+    plog(__FUNCTION__, p(addr), p(type), p(name));
 
-	if (!*name)
-		return 0;
+    if(!*name)
+        return 0;
 
-	NameKey key = { addr, type };
-	auto item = names_table.find(key);
-	if (item != names_table.end()) // replacing
-	{
-		if (item->second != name) // edit name
-			item->second = name;
-	}
-	else
-		names_table.insert(make_pair(key, name)); // add new entry
+    auto key = std::make_pair(type, addr);
+    auto item = quickNames.find(key);
+    if(item != quickNames.end())  // replacing
+    {
+        if(item->second != name)  // edit name
+            item->second = name;
+    }
+    else
+        quickNames.insert({ key, name }); // add new entry
 
-	return 0;
+    return 0;
 }
 
 extc void cdecl Mergequicknames()
 {
-	plog(__FUNCTION__)
+    plog(__FUNCTION__)
 
-		for (auto &item : names_table)
-		{
-			auto key = item.first;
-			Insertname((duint)key.first, (int)key.second, (char*)item.second.c_str());
-		}
+    for(auto & item : quickNames)
+    {
+        auto key = item.first;
+        Insertname((duint)key.first, (int)key.second, (char*)item.second.c_str());
+    }
 
-	names_table.clear();
+    quickNames.clear();
 }
 
-extc void cdecl Discardquicknames() { ulog(__FUNCTION__) }
+extc void cdecl Discardquicknames()
+{
+    plog(__FUNCTION__);
+    quickNames.clear();
+}
 
 extc int cdecl Findname(ulong addr, int type, char* name) { ulog(__FUNCTION__, p(addr), p(type), p(name)) return 0; }
 
@@ -718,8 +716,8 @@ extc void cdecl Redrawdisassembler() { ulog(__FUNCTION__) }
 
 extc void cdecl Getdisassemblerrange(ulong* pbase, ulong* psize)
 {
-	*pbase = DbgMemFindBaseAddr(Eval("cip"), psize);
-	plog(__FUNCTION__, p(*pbase), p(*psize));
+    *pbase = DbgMemFindBaseAddr(Eval("cip"), psize);
+    plog(__FUNCTION__, p(*pbase), p(*psize));
 }
 
 extc ulong cdecl Findprocbegin(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
@@ -834,7 +832,7 @@ extc int cdecl Pluginreadstringfromini(HINSTANCE dllinst, char* key, char* s, ch
 
 extc int cdecl Plugingetvalue(int type)
 {
-	static char szProcessName[MAX_PATH];
+    static char szProcessName[MAX_PATH];
 
     plog(__FUNCTION__, p(type));
     switch(type)
@@ -906,8 +904,8 @@ extc int cdecl Plugingetvalue(int type)
         return Script::Module::GetMainModuleBase();
         break;
     case VAL_PROCESSNAME: // Name of the active process
-		Script::Module::GetMainModuleName(szProcessName);
-		return (int)szProcessName;
+        Script::Module::GetMainModuleName(szProcessName);
+        return (int)szProcessName;
         break;
     case VAL_EXEFILENAME: // Name of the main debugged file
         oputs("UNIMPLEMENTED: VAL_EXEFILENAME");
