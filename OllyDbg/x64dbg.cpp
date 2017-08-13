@@ -2,6 +2,7 @@
 #define _CHAR_UNSIGNED //TODO: this is probably harmful for the implementation of certain functions
 #include "OllyDbg.h"
 #include "loghacks.h"
+#include "HackyPeParser.h"
 #include "stringutils.h"
 #include <unordered_map>
 #include <map>
@@ -507,12 +508,20 @@ bool ollyModFromAddr(duint addr, t_module* mod)
 
     //TODO: not all fields are populated
     memset(mod, 0, sizeof(mod));
+    auto found = modulesLoaded.find(info.base);
+
     mod->base = info.base;
     mod->size = info.size;
     mod->entry = info.entry;
+    mod->codebase = found->second.codebase + info.base;
+    mod->codesize = found->second.codesize;
+    mod->resbase = found->second.resbase + info.base;
+    mod->ressize = found->second.ressize;
     strcpy_s(mod->path, info.path);
+    strncpy_s(mod->name, info.name, sizeof(mod->name) - 1);
     mod->nsect = info.sectionCount;
     mod->issystemdll = DbgFunctions()->ModGetParty(info.base) == 1;
+
     return true;
 }
 
