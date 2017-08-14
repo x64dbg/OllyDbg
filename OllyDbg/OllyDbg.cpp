@@ -647,7 +647,7 @@ extc int cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcoun
     else
         sprintf_s(command, "bpd %X", addr);
 
-    DbgCmdExecDirect(command);
+    return (int)DbgCmdExecDirect(command);
 
     return 0;
 }
