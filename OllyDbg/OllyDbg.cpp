@@ -620,29 +620,161 @@ extc ulong cdecl Walkreferenceex(int dir, ulong* size) { ulog(__FUNCTION__, p(di
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////// BREAKPOINT AND TRACE FUNCTIONS ////////////////////////
-extc int cdecl Setbreakpoint(ulong addr, ulong type, uchar cmd) { ulog(__FUNCTION__, p(addr), p(type), p(cmd)) return 0; }
+extc int cdecl Setbreakpoint(ulong addr, ulong type, uchar cmd) // deprecated version of Setbreakpointext
+{
+    plog(__FUNCTION__, p(addr), p(type), p(cmd));
 
-extc int cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcount) { ulog(__FUNCTION__, p(addr), p(type), p(cmd), p(passcount)) return 0; }
+    return Setbreakpointext(addr, type, cmd, 0); // call newer function
+}
+
+extc int cdecl Setbreakpointext(ulong addr, ulong type, char cmd, ulong passcount)
+{
+    char command[MAX_PATH];
+
+    plog(__FUNCTION__, p(addr), p(type), p(cmd), p(passcount));
+
+    // TODO: not all flags are implemented
+    // TY_SETCOUNT : NOT DEFINED IN OllyDbg.h. Force pass count even if breakpoint already exists
+    if((type & TY_TEMP) == TY_TEMP)
+        oputs("UNIMPLEMENTED: TY_TEMP ");
+    if((type & TY_STOPAN) == TY_STOPAN)
+        oputs("UNIMPLEMENTED: TY_STOPAN ");
+    if((type & TY_KEEPCODE) == TY_KEEPCODE)
+        oputs("UNIMPLEMENTED: TY_KEEPCODE ");
+
+    if((type & TY_ACTIVE) == TY_ACTIVE)
+        ((type & TY_ONESHOT) == TY_ONESHOT) ? sprintf_s(command, "bp %X,ss", addr) : sprintf_s(command, "bp %X", addr); // using command in order to use the type parameter
+    else
+        sprintf_s(command, "bpd %X", addr);
+
+    DbgCmdExecDirect(command);
+
+    return 0;
+}
 
 extc int cdecl Manualbreakpoint(ulong addr, int key, int shiftkey, ulong nametype, int font) { ulog(__FUNCTION__, p(addr), p(key), p(shiftkey), p(nametype), p(font)) return 0; }
 
-extc void cdecl Deletebreakpoints(ulong addr0, ulong addr1, int silent) { ulog(__FUNCTION__, p(addr0), p(addr1), p(silent)) }
+extc void cdecl Deletebreakpoints(ulong addr0, ulong addr1, int silent) { ulog(__FUNCTION__, p(addr0), p(addr1), p(silent)) } // no doc found
 
-extc ulong cdecl Getbreakpointtype(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
+extc ulong cdecl Getbreakpointtype(ulong addr) // no doc found but apparently same as Getbreakpointtypecount
+{
+    plog(__FUNCTION__, p(addr));
+    return Getbreakpointtypecount(addr, NULL);
+}
 
-extc ulong cdecl Getbreakpointtypecount(ulong addr, ulong* passcount) { ulog(__FUNCTION__, p(addr), p(passcount)) return 0; }
+extc ulong cdecl Getbreakpointtypecount(ulong addr, ulong* passcount)
+{
+    BRIDGEBP bp;
+    BRIDGEBP* bp_found = NULL;
+    ulong bp_flags = 0;
 
-extc ulong cdecl Getnextbreakpoint(ulong addr, ulong* type, int* cmd) { ulog(__FUNCTION__, p(addr), p(type), p(cmd)) return 0; }
+    memset(&bp, 0, sizeof(BRIDGEBP));
 
-extc void cdecl Tempbreakpoint(ulong addr, int mode) { ulog(__FUNCTION__, p(addr), p(mode)) }
+    DbgFunctions()->GetBridgeBp(bp_normal, addr, &bp);
+    if(bp.type != bp_none)
+        bp_found = &bp;
 
-extc int cdecl Hardbreakpoints(int closeondelete) { ulog(__FUNCTION__, p(closeondelete)) return 0; }
+    if(!bp_found)
+    {
+        DbgFunctions()->GetBridgeBp(bp_hardware, addr, &bp);
+        if(bp.type != bp_none)
+            bp_found = &bp;
+    }
 
-extc int cdecl Sethardwarebreakpoint(ulong addr, int size, int type) { ulog(__FUNCTION__, p(addr), p(size), p(type)) return 0; }
+    if(!bp_found)
+    {
+        DbgFunctions()->GetBridgeBp(bp_memory, addr, &bp);
+        if(bp.type != bp_none)
+            bp_found = &bp;
+    }
 
-extc int cdecl Deletehardwarebreakpoint(int index) { ulog(__FUNCTION__, p(index)) return 0; }
+    // Olly doesn't handle bp_dll or bp_exception so these are skipped
 
-extc int cdecl Deletehardwarebreakbyaddr(ulong addr) { ulog(__FUNCTION__, p(addr)) return 0; }
+    if(bp_found)
+    {
+        // TODO: Missing flags TY_SET and TY_TEMP implementation
+        (bp_found->active) ? bp_flags |= TY_ACTIVE : bp_flags |= TY_DISABLED;
+        if(bp_found->singleshoot)
+            bp_flags |= TY_ONESHOT;
+
+        if(passcount)
+            *passcount = bp_found->hitCount;
+    }
+
+    plog(__FUNCTION__, p(addr), p(passcount));
+
+    return bp_flags;
+}
+
+extc ulong cdecl Getnextbreakpoint(ulong addr, ulong* type, int* cmd) { ulog(__FUNCTION__, p(addr), p(type), p(cmd)) return 0; } // no doc found
+
+extc void cdecl Tempbreakpoint(ulong addr, int mode)
+{
+    //char command[MAX_PATH];
+
+    plog(__FUNCTION__, p(addr), p(mode));
+
+    // TODO: not all flags are implemented
+    if((mode & (TY_ONESHOT | TY_KEEPCOND | TY_STOPAN)) == (TY_ONESHOT | TY_KEEPCOND | TY_STOPAN))
+        oputs("UNIMPLEMENTED: TY_ONESHOT|TY_KEEPCOND|TY_STOPAN ");
+    //  sprintf_s(command, "bp %X,ss", addr);
+    if((mode & (TY_TEMP | TY_KEEPCOND)) == (TY_TEMP | TY_KEEPCOND))
+        oputs("UNIMPLEMENTED: TY_TEMP | TY_KEEPCOND ");
+    //  sprintf_s(command, "bpd %X", addr);
+    //DbgCmdExecDirect(command);
+
+    Setbreakpointext(addr, TY_ACTIVE | TY_ONESHOT, NULL, 0); // force singleshot bp
+}
+
+extc int cdecl Hardbreakpoints(int closeondelete) { ulog(__FUNCTION__, p(closeondelete)) return 0; } // show bps tab
+
+extc int cdecl Sethardwarebreakpoint(ulong addr, int size, int type)
+{
+    char cmd[MAX_PATH];
+
+    plog(__FUNCTION__, p(addr), p(size), p(type));
+
+    char c_type;
+    switch(type)
+    {
+    case HB_CODE:
+        c_type = 'x';
+        break;
+    case HB_ACCESS:
+        c_type = 'r';
+        break;
+    case HB_WRITE:
+        c_type = 'w';
+        break;
+    default:
+        break;
+    }
+
+    sprintf_s(cmd, "bph %X,%c,%d", addr, c_type, size); // using command in order to use the size parameter
+    DbgCmdExecDirect(cmd);
+
+    return 0;
+}
+
+extc int cdecl Deletehardwarebreakpoint(int index)
+{
+    plog(__FUNCTION__, p(index));
+
+    BPMAP hbp_list;
+    DbgGetBpList(bp_hardware, &hbp_list);
+
+    if(hbp_list.count > 0)
+        return (int)(Script::Debug::DeleteHardwareBreakpoint(hbp_list.bp[index].addr));
+
+    return -1;
+}
+
+extc int cdecl Deletehardwarebreakbyaddr(ulong addr)
+{
+    plog(__FUNCTION__, p(addr));
+
+    return (int)(Script::Debug::DeleteHardwareBreakpoint(addr));
+}
 
 extc int cdecl Setmembreakpoint(int type, ulong addr, ulong size) { ulog(__FUNCTION__, p(type), p(addr), p(size)) return 0; }
 
