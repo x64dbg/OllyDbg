@@ -11,3 +11,15 @@ Download: [![Build status](https://ci.appveyor.com/api/projects/status/ti08h0opr
 ## 0llyDbgLoad
 
 This is a simple plugin that automatically installs the latest `OllyDbg.exe` from your build directory if you start x64dbg. This is very useful during development.
+
+## Supported Plugins List (currently being updated)
+
+| **Ollydbg Plugin** 	| **Tested** 	| **Working**   	| **x64dbg Plugin Equivalent** 	|
+|----------------	|--------	|-----------	|--------------------------	|
+| Games Invader  	| Yes    	| Yes       	| [ClawSearch](https://github.com/codecat/ClawSearch)               	|
+| CHC 2014       	| Yes    	| Yes       	|                          	|
+| Cheat Utility  	| Yes    	| Parcially 	| [ClawSearch](https://github.com/codecat/ClawSearch)               	|
+| Data Ripper    	| Yes    	| Yes       	|                          	|
+| GODUP Plugin   	| Yes    	| Yes       	| [SwissArmyKnife](https://github.com/Nukem9/SwissArmyKnife), [labeless](https://github.com/a1ext/labeless) 	|
+| Olly Invisible 	| No     	| Unknown   	| [ScyllaHide](https://github.com/x64dbg/ScyllaHide), [TitanHide](https://github.com/mrexodia/TitanHide)    	|
+| StrCopy        	| Yes    	| Yes       	|                          	|
