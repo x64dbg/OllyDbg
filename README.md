@@ -8,7 +8,7 @@ Implementation of OllyDbg 1.10 plugin SDK for [x64dbg](http://x64dbg.com).
 
 Download: [![Build status](https://ci.appveyor.com/api/projects/status/ti08h0opr62k0lck?svg=true)](https://ci.appveyor.com/project/mrexodia/ollydbg/artifacts)
 
-## 0llyDbgLoad
+## OllyDbgLoad
 
 This is a simple plugin that automatically installs the latest `OllyDbg.exe` from your build directory if you start x64dbg. This is very useful during development.
 
