@@ -6,3 +6,4 @@ ipch/
 Release/
 Debug/
 *.chw
+*.vcxproj.user
