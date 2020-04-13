@@ -920,9 +920,44 @@ extc HWND cdecl Createpatchwindow() { ulog(__FUNCTION__) return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// PLUGIN-SPECIFIC FUNCTIONS ///////////////////////////
-extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc) { ulog(__FUNCTION__, p(classname), p(iconname), p(dllinst), p(classproc)) return 0; }
+extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc)
+{
+    plog(__FUNCTION__, p(classname), p(iconname), p(dllinst), p(classproc));
+    if (classname && classproc)
+    {
+        static int id = 0;
+        sprintf_s(classname, 32, "OT_PLUGIN_%04i", id);
+        id++;
 
-extc void cdecl Unregisterpluginclass(char* classname) { ulog(__FUNCTION__, p(classname)) }
+        WNDCLASSA WndClass = { 0 };
+        WndClass.style = 11;
+        WndClass.lpfnWndProc = classproc;
+        WndClass.cbClsExtra = 0;
+        WndClass.cbWndExtra = 32;
+        WndClass.hInstance = hInstMain;
+        if (iconname && *iconname)
+            WndClass.hIcon = LoadIconA(dllinst, iconname);
+        /*else
+            WndClass.hIcon = LoadIconA(hInstance, "ICO_PLUGIN");*/
+        WndClass.hCursor = 0;
+        WndClass.hbrBackground = 0;
+        WndClass.lpszMenuName = 0;
+        WndClass.lpszClassName = classname;
+        if (RegisterClassA(&WndClass))
+            return 0;
+        else
+            *classname = '\0';
+    }
+    return -1;
+}
+
+extc void cdecl Unregisterpluginclass(char* classname)
+{
+    plog(__FUNCTION__, p(classname));
+
+    if (classname && *classname)
+        UnregisterClassA(classname, hInstMain);
+}
 
 extc int cdecl Pluginwriteinttoini(HINSTANCE dllinst, char* key, int value)
 {
