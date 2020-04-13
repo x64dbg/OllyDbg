@@ -719,9 +719,6 @@ extc int cdecl Pluginsaverecord(ulong tag, ulong size, void* data)
 
 static void modLoad(duint base, bool ismainmodule)
 {
-    static t_module uddMod;
-    if(!ollyModFromAddr(base, &uddMod))
-        return;
     char modname[MAX_MODULE_SIZE];
     if(!Script::Module::NameFromAddr(base, modname))
         __debugbreak();
@@ -734,6 +731,9 @@ static void modLoad(duint base, bool ismainmodule)
     }
     if(!modulesLoaded.insert({ base, peData }).second)
         __debugbreak();
+    static t_module uddMod;
+    if (!ollyModFromAddr(base, &uddMod))
+        return;
     auto found = uddEntryMap.find(modname);
     if(found != uddEntryMap.end())
         for(auto & entry : found->second)
@@ -768,8 +768,11 @@ PLUG_EXPORT void CBCREATEPROCESS(CBTYPE, PLUG_CB_CREATEPROCESS* info)
 PLUG_EXPORT void CBEXITPROCESS(CBTYPE, PLUG_CB_EXITPROCESS* info)
 {
     auto mainbase = Script::Module::GetMainModuleBase();
-    for(auto & mod : modulesLoaded)
-        modUnload(mod.first, mod.first == mainbase);
+    std::vector<duint> modbases;
+    for (const auto& mod : modulesLoaded)
+        modbases.push_back(mod.first);
+    for(duint base : modbases)
+        modUnload(base, base == mainbase);
     modulesLoaded.clear();
 }
 
