@@ -546,9 +546,9 @@ static void loadPlugins()
 
 static void loadConsole()
 {
-	duint setting;
-	if (!BridgeSettingGetUint("OllyDbg", "EnableConsole", &setting) || !setting)
-		return;
+    duint setting;
+    if(!BridgeSettingGetUint("OllyDbg", "EnableConsole", &setting) || !setting)
+        return;
 
     AllocConsole();
     SetConsoleTitleA(PLUGIN_NAME);
@@ -735,7 +735,7 @@ static void modLoad(duint base, bool ismainmodule)
     if(!modulesLoaded.insert({ base, peData }).second)
         __debugbreak();
     static t_module uddMod;
-    if (!ollyModFromAddr(base, &uddMod))
+    if(!ollyModFromAddr(base, &uddMod))
         return;
     auto found = uddEntryMap.find(modname);
     if(found != uddEntryMap.end())
@@ -772,7 +772,7 @@ PLUG_EXPORT void CBEXITPROCESS(CBTYPE, PLUG_CB_EXITPROCESS* info)
 {
     auto mainbase = Script::Module::GetMainModuleBase();
     std::vector<duint> modbases;
-    for (const auto& mod : modulesLoaded)
+    for(const auto & mod : modulesLoaded)
         modbases.push_back(mod.first);
     for(duint base : modbases)
         modUnload(base, base == mainbase);

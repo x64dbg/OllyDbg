@@ -923,7 +923,7 @@ extc HWND cdecl Createpatchwindow() { ulog(__FUNCTION__) return 0; }
 extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dllinst, WNDPROC classproc)
 {
     plog(__FUNCTION__, p(classname), p(iconname), p(dllinst), p(classproc));
-    if (classname && classproc)
+    if(classname && classproc)
     {
         static int id = 0;
         sprintf_s(classname, 32, "OT_PLUGIN_%04i", id);
@@ -935,7 +935,7 @@ extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dl
         WndClass.cbClsExtra = 0;
         WndClass.cbWndExtra = 32;
         WndClass.hInstance = hInstMain;
-        if (iconname && *iconname)
+        if(iconname && *iconname)
             WndClass.hIcon = LoadIconA(dllinst, iconname);
         /*else
             WndClass.hIcon = LoadIconA(hInstance, "ICO_PLUGIN");*/
@@ -943,7 +943,7 @@ extc int cdecl Registerpluginclass(char* classname, char* iconname, HINSTANCE dl
         WndClass.hbrBackground = 0;
         WndClass.lpszMenuName = 0;
         WndClass.lpszClassName = classname;
-        if (RegisterClassA(&WndClass))
+        if(RegisterClassA(&WndClass))
             return 0;
         else
             *classname = '\0';
@@ -955,7 +955,7 @@ extc void cdecl Unregisterpluginclass(char* classname)
 {
     plog(__FUNCTION__, p(classname));
 
-    if (classname && *classname)
+    if(classname && *classname)
         UnregisterClassA(classname, hInstMain);
 }
 
