@@ -546,6 +546,10 @@ static void loadPlugins()
 
 static void loadConsole()
 {
+	duint setting;
+	if (!BridgeSettingGetUint("OllyDbg", "EnableConsole", &setting) || !setting)
+		return;
+
     AllocConsole();
     SetConsoleTitleA(PLUGIN_NAME);
 
@@ -553,7 +557,6 @@ static void loadConsole()
     if(BridgeSettingGetUint("OllyDbg", "ConsoleX", &x) && BridgeSettingGetUint("OllyDbg", "ConsoleY", &y))
     {
         auto zhwnd = HWND_TOPMOST;
-        duint setting;
         if(BridgeSettingGetUint("OllyDbg", "NoConsoleTopmost", &setting) && setting)
             zhwnd = HWND_TOP;
         SetWindowPos(GetConsoleWindow(), zhwnd, int(x), int(y), 0, 0, SWP_NOSIZE);
